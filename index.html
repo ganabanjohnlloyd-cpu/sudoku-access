@@ -1,0 +1,409 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sudoku Access</title>
+<style>
+:root {
+ --bg:#f2f5fb;--card:#fff;--text:#1b2940;
+ --muted:#64748b;--line:#cbd5e1;--accent:#2563eb;
+ --soft:#e8efff;--fixed:#e9eef7;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+ font-family:Arial,sans-serif;transition:.2s}
+body.dark{--bg:#111827;--card:#1f2937;--text:#f8fafc;
+ --muted:#cbd5e1;--line:#526078;--accent:#60a5fa;
+ --soft:#263b5c;--fixed:#344256}
+body.contrast{--bg:#000;--card:#080808;--text:#fff;
+ --muted:#fff;--line:#fff;--accent:#ffeb00;
+ --soft:#333300;--fixed:#222}
+header{background:var(--card);padding:18px 5%;
+ border-bottom:1px solid var(--line)}
+nav{max-width:1050px;margin:auto;display:flex;
+ justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.logo{font-size:22px;font-weight:bold;color:var(--accent)}
+button,select{font:inherit;cursor:pointer}
+button{border:1px solid var(--line);background:var(--card);
+ color:var(--text);padding:10px;border-radius:9px;font-weight:bold}
+button:hover{border-color:var(--accent)}
+button:focus-visible,.cell:focus-visible{
+ outline:3px solid #f59e0b;outline-offset:2px}
+.primary{background:var(--accent);color:white;border:0}
+main{max-width:1000px;margin:35px auto;padding:0 15px}
+.hero{text-align:center;margin-bottom:25px}
+.hero h1{font-size:35px;margin:8px}
+.hero p{color:var(--muted)}
+.layout{display:grid;grid-template-columns:1.4fr .8fr;gap:20px}
+.card{background:var(--card);border:1px solid var(--line);
+ border-radius:16px;padding:18px;margin-bottom:15px}
+.stats{display:flex;justify-content:space-around;
+ text-align:center;margin-bottom:15px;gap:5px}
+.stats small{display:block;color:var(--muted)}
+.stats strong{font-size:19px}
+.board{display:grid;grid-template-columns:repeat(9,1fr);
+ width:100%;max-width:520px;aspect-ratio:1;margin:auto;
+ border:2px solid var(--text);border-radius:5px;overflow:hidden}
+.cell{padding:0;border:0;border-right:1px solid var(--line);
+ border-bottom:1px solid var(--line);border-radius:0;
+ min-width:0;font-size:clamp(15px,3vw,24px);
+ display:grid;place-items:center}
+.cell:nth-child(3n){border-right:2px solid var(--text)}
+.cell:nth-child(9n){border-right:0}
+.cell:nth-child(n+19):nth-child(-n+27),
+.cell:nth-child(n+46):nth-child(-n+54){
+ border-bottom:2px solid var(--text)}
+.cell.fixed{background:var(--fixed);font-weight:900}
+.cell.related{background:var(--soft)}
+.cell.selected{background:#bfdbfe;color:#172554;
+ box-shadow:inset 0 0 0 3px #2563eb}
+.cell.same{background:#bbf7d0;color:#14532d}
+.cell.error{background:#fecaca;color:#7f1d1d}
+.numbers{display:grid;grid-template-columns:repeat(9,1fr);
+ gap:5px;max-width:520px;margin:15px auto}
+.numbers button{font-size:20px;padding:12px 0}
+.tools{display:grid;grid-template-columns:repeat(3,1fr);
+ gap:8px;margin-top:10px}
+select{padding:9px;border:1px solid var(--line);
+ border-radius:8px;background:var(--card);color:var(--text)}
+.setting{display:flex;justify-content:space-between;
+ align-items:center;gap:10px;margin:13px 0}
+.message{background:var(--soft);padding:12px;
+ border-radius:9px;margin-top:12px;font-size:14px}
+.instructions{color:var(--muted);line-height:1.8;
+ padding-left:20px;font-size:14px}
+footer{text-align:center;color:var(--muted);
+ padding:25px;font-size:13px}
+body.large .cell{font-size:clamp(21px,4vw,30px)}
+@media(max-width:750px){
+ .layout{grid-template-columns:1fr}
+ .hero h1{font-size:28px}
+}
+</style>
+</head>
+<body>
+<header>
+<nav>
+<div class="logo">▦ Sudoku Access</div>
+<div>
+<button id="theme">🌙 Dark Mode</button>
+<button id="contrast">◐ Contrast</button>
+</div>
+</nav>
+</header>
+
+<main>
+<div class="hero">
+<h1>Sudoku Access</h1>
+<p>Play smarter. Play comfortably. Play without limits.</p>
+</div>
+
+<div class="layout">
+<section class="card">
+<div class="stats">
+<div><small>TIME</small><strong id="timer">00:00</strong></div>
+<div><small>FILLED</small><strong id="filled">0/81</strong></div>
+<div><small>MISTAKES</small><strong id="mistakes">0</strong></div>
+</div>
+
+<div id="board" class="board" aria-label="Sudoku board"></div>
+<div id="numbers" class="numbers"></div>
+
+<div class="tools">
+<button id="erase">⌫ Erase</button>
+<button id="notes">✎ Notes: OFF</button>
+<button id="hint">💡 Hint</button>
+</div>
+<div class="tools">
+<button id="pause">Ⅱ Pause</button>
+<button id="check">✓ Check</button>
+<button class="primary" id="new">＋ New Game</button>
+</div>
+<div class="message" id="message" role="status" aria-live="polite">
+Welcome! Select an empty square to start playing.
+</div>
+</section>
+
+<aside>
+<section class="card">
+<h3>⚙️ Game Settings</h3>
+<div class="setting">
+<label for="level">Difficulty</label>
+<select id="level">
+<option>Easy</option>
+<option>Medium</option>
+<option>Hard</option>
+</select>
+</div>
+<div class="setting">
+<label for="size">Number Size</label>
+<select id="size">
+<option value="normal">Normal</option>
+<option value="large">Large</option>
+</select>
+</div>
+<div class="setting">
+<label for="voice">Voice Assistance</label>
+<input type="checkbox" id="voice">
+</div>
+</section>
+
+<section class="card">
+<h3>📖 How to Play</h3>
+<ol class="instructions">
+<li>Fill the empty squares using numbers 1 to 9.</li>
+<li>Each row must contain numbers without repetition.</li>
+<li>Each column must contain numbers without repetition.</li>
+<li>Each 3×3 box must contain numbers without repetition.</li>
+<li>Use Notes to remember possible numbers.</li>
+<li>Use Hint when you need help.</li>
+</ol>
+<button id="read">🔊 Read Instructions</button>
+</section>
+
+<section class="card">
+<h3>♿ Accessibility Features</h3>
+<p class="instructions">
+High contrast mode, larger numbers, voice assistance,
+simple controls, and beginner-friendly instructions.
+</p>
+</section>
+</aside>
+</div>
+</main>
+
+<footer>Sudoku Access | HCI2 Usability Testing Prototype</footer>
+
+<script>
+const puzzles={
+Easy:[
+'530070000','600195000','098000060',
+'800060003','400803001','700020006',
+'060000280','000419005','000080079'],
+Medium:[
+'003020600','900305001','001806400',
+'008102900','700000008','006708200',
+'002609500','800203009','005010300'],
+Hard:[
+'000260701','680070090','190004500',
+'820100040','004602900','050003028',
+'009300074','040050036','703018000']
+};
+const solutions={
+Easy:[
+'534678912','672195348','198342567',
+'859761423','426853791','713924856',
+'961537284','287419635','345286179'],
+Medium:[
+'483921657','967345821','251876493',
+'548132976','729564138','136798245',
+'372689514','814253769','695417382'],
+Hard:[
+'435269781','682571493','197834562',
+'826195347','374682915','951743628',
+'519326874','248957136','763418259']
+};
+
+const $=id=>document.getElementById(id);
+let level='Easy',initial,grid,solution;
+let selected=0,mistakes=0,seconds=0;
+let paused=false,notesMode=false;
+let notes=[],clock,colorMode=false;
+
+function message(t){
+ $('message').textContent=t;
+ if($('voice').checked && 'speechSynthesis' in window){
+ speechSynthesis.cancel();
+ speechSynthesis.speak(new SpeechSynthesisUtterance(t));
+ }
+}
+
+function start(){
+ clearInterval(clock);
+ seconds=0;mistakes=0;selected=0;
+ paused=false;notesMode=false;
+ level=$('level').value;
+ initial=puzzles[level].map(r=>r.split('').map(Number));
+ grid=initial.map(r=>r.slice());
+ solution=solutions[level].map(r=>r.split('').map(Number));
+ notes=Array.from({length:81},()=>new Set());
+ $('timer').textContent='00:00';
+ $('pause').textContent='Ⅱ Pause';
+ $('notes').textContent='✎ Notes: OFF';
+ $('level').value=level;
+ render();
+ message('New '+level+' puzzle ready. Good luck!');
+ clock=setInterval(()=>{
+ if(!paused){
+ seconds++;
+ $('timer').textContent=
+ String(Math.floor(seconds/60)).padStart(2,'0')+':'+
+ String(seconds%60).padStart(2,'0');
+ }
+ },1000);
+}
+
+function valid(r,c,n){
+ for(let i=0;i<9;i++){
+ if(i!==c && grid[r][i]===n)return false;
+ if(i!==r && grid[i][c]===n)return false;
+ }
+ let br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;
+ for(let y=br;y<br+3;y++)
+ for(let x=bc;x<bc+3;x++)
+ if((y!==r||x!==c)&&grid[y][x]===n)return false;
+ return true;
+}
+
+function render(){
+ const board=$('board');
+ board.innerHTML='';
+ let sr=Math.floor(selected/9),sc=selected%9;
+ let selectedValue=grid[sr][sc];
+
+ for(let i=0;i<81;i++){
+ let r=Math.floor(i/9),c=i%9,n=grid[r][c];
+ let b=document.createElement('button');
+ b.className='cell';
+ if(initial[r][c])b.classList.add('fixed');
+ if(i===selected)b.classList.add('selected');
+ else if(r===sr||c===sc||
+ (Math.floor(r/3)===Math.floor(sr/3)&&
+ Math.floor(c/3)===Math.floor(sc/3)))
+ b.classList.add('related');
+ if(selectedValue&&n===selectedValue&&i!==selected)
+ b.classList.add('same');
+ if(n&&!valid(r,c,n))b.classList.add('error');
+
+ b.textContent=n||'';
+ b.setAttribute('aria-label',
+ 'Row '+(r+1)+', column '+(c+1)+', '+(n||'empty'));
+ b.onclick=()=>{
+ if(paused)return;
+ selected=i;render();
+ };
+ board.appendChild(b);
+ }
+ $('filled').textContent=
+ grid.flat().filter(Boolean).length+'/81';
+ $('mistakes').textContent=mistakes;
+}
+
+function enter(n){
+ if(paused)return message('Resume the game first.');
+ let r=Math.floor(selected/9),c=selected%9;
+ if(initial[r][c])return message('This number is fixed.');
+ if(notesMode){
+ if(notes[selected].has(n))notes[selected].delete(n);
+ else notes[selected].add(n);
+ message('Note updated.');
+ return;
+ }
+ grid[r][c]=n;
+ render();
+ if(n!==solution[r][c]){
+ mistakes++;
+ $('mistakes').textContent=mistakes;
+ message('Incorrect number. Try again!');
+ }else{
+ message('Correct! Keep going.');
+ }
+ if(grid.every((row,y)=>row.every((v,x)=>v===solution[y][x]))){
+ clearInterval(clock);
+ message('Congratulations! You solved the puzzle! 🎉');
+ }
+}
+
+for(let n=1;n<=9;n++){
+ let b=document.createElement('button');
+ b.textContent=n;
+ b.onclick=()=>enter(n);
+ $('numbers').appendChild(b);
+}
+
+$('erase').onclick=()=>{
+ if(paused)return;
+ let r=Math.floor(selected/9),c=selected%9;
+ if(initial[r][c])return message('Cannot erase a fixed number.');
+ grid[r][c]=0;
+ notes[selected].clear();
+ render();message('Square erased.');
+};
+
+$('notes').onclick=()=>{
+ notesMode=!notesMode;
+ $('notes').textContent='✎ Notes: '+(notesMode?'ON':'OFF');
+ message(notesMode?'Notes mode enabled.':'Notes mode disabled.');
+};
+
+$('hint').onclick=()=>{
+ if(paused)return;
+ let r=Math.floor(selected/9),c=selected%9;
+ if(initial[r][c])return message('Select an empty square.');
+ grid[r][c]=solution[r][c];
+ notes[selected].clear();
+ render();message('Hint added!');
+};
+
+$('pause').onclick=()=>{
+ paused=!paused;
+ $('pause').textContent=paused?'▶ Resume':'Ⅱ Pause';
+ message(paused?'Game paused.':'Game resumed.');
+};
+
+$('check').onclick=()=>{
+ let errors=0;
+ grid.forEach((row,r)=>row.forEach((n,c)=>{
+ if(n&&!valid(r,c,n))errors++;
+ }));
+ message(errors?
+ errors+' conflicting entries found. Review your answers.':
+ 'No conflicting numbers found!');
+};
+
+$('new').onclick=start;
+$('level').onchange=start;
+
+$('theme').onclick=()=>{
+ document.body.classList.toggle('dark');
+ $('theme').textContent=document.body.classList.contains('dark')?
+ '☀ Light Mode':'🌙 Dark Mode';
+};
+
+$('contrast').onclick=()=>{
+ document.body.classList.toggle('contrast');
+};
+
+$('size').onchange=e=>{
+ document.body.classList.toggle('large',e.target.value==='large');
+};
+
+$('read').onclick=()=>{
+ let t='Welcome to Sudoku Access. Fill every row, column, and three by three box using numbers one to nine without repeating numbers.';
+ if('speechSynthesis'in window){
+ speechSynthesis.cancel();
+ speechSynthesis.speak(new SpeechSynthesisUtterance(t));
+ }else message('Voice assistance is not supported by this browser.');
+};
+
+document.addEventListener('keydown',e=>{
+ if(e.target.tagName==='SELECT')return;
+ if(e.key>='1'&&e.key<='9')enter(Number(e.key));
+ if(e.key==='Backspace'||e.key==='Delete')$('erase').click();
+ if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
+ e.preventDefault();
+ let r=Math.floor(selected/9),c=selected%9;
+ if(e.key==='ArrowUp')r=Math.max(0,r-1);
+ if(e.key==='ArrowDown')r=Math.min(8,r+1);
+ if(e.key==='ArrowLeft')c=Math.max(0,c-1);
+ if(e.key==='ArrowRight')c=Math.min(8,c+1);
+ selected=r*9+c;render();
+ }
+});
+
+start();
+</script>
+</body>
+</html>
