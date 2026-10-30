@@ -4,139 +4,425 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sudoku Access</title>
+<title>Sudoku Access | Accessible Puzzle Game</title>
+
 <style>
 :root {
- --bg:#f2f5fb;--card:#fff;--text:#1b2940;
- --muted:#64748b;--line:#cbd5e1;--accent:#2563eb;
- --soft:#e8efff;--fixed:#e9eef7;
+  --bg:#f5f5ef;
+  --surface:#ffffff;
+  --text:#303b35;
+  --muted:#788078;
+  --border:#dce1d9;
+  --accent:#728c78;
+  --accent-light:#e9efe9;
+  --fixed:#eef0eb;
+  --selected:#e2ecdf;
+  --error:#f5dddd;
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);
- font-family:Arial,sans-serif;transition:.2s}
-body.dark{--bg:#111827;--card:#1f2937;--text:#f8fafc;
- --muted:#cbd5e1;--line:#526078;--accent:#60a5fa;
- --soft:#263b5c;--fixed:#344256}
-body.contrast{--bg:#000;--card:#080808;--text:#fff;
- --muted:#fff;--line:#fff;--accent:#ffeb00;
- --soft:#333300;--fixed:#222}
-header{background:var(--card);padding:18px 5%;
- border-bottom:1px solid var(--line)}
-nav{max-width:1050px;margin:auto;display:flex;
- justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.logo{font-size:22px;font-weight:bold;color:var(--accent)}
-button,select{font:inherit;cursor:pointer}
-button{border:1px solid var(--line);background:var(--card);
- color:var(--text);padding:10px;border-radius:9px;font-weight:bold}
-button:hover{border-color:var(--accent)}
-button:focus-visible,.cell:focus-visible{
- outline:3px solid #f59e0b;outline-offset:2px}
-.primary{background:var(--accent);color:white;border:0}
-main{max-width:1000px;margin:35px auto;padding:0 15px}
-.hero{text-align:center;margin-bottom:25px}
-.hero h1{font-size:35px;margin:8px}
-.hero p{color:var(--muted)}
-.layout{display:grid;grid-template-columns:1.4fr .8fr;gap:20px}
-.card{background:var(--card);border:1px solid var(--line);
- border-radius:16px;padding:18px;margin-bottom:15px}
-.stats{display:flex;justify-content:space-around;
- text-align:center;margin-bottom:15px;gap:5px}
-.stats small{display:block;color:var(--muted)}
-.stats strong{font-size:19px}
-.board{display:grid;grid-template-columns:repeat(9,1fr);
- width:100%;max-width:520px;aspect-ratio:1;margin:auto;
- border:2px solid var(--text);border-radius:5px;overflow:hidden}
-.cell{padding:0;border:0;border-right:1px solid var(--line);
- border-bottom:1px solid var(--line);border-radius:0;
- min-width:0;font-size:clamp(15px,3vw,24px);
- display:grid;place-items:center}
-.cell:nth-child(3n){border-right:2px solid var(--text)}
-.cell:nth-child(9n){border-right:0}
+
+* {box-sizing:border-box}
+
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+  transition:background .2s,color .2s;
+}
+
+body.dark {
+  --bg:#202522;
+  --surface:#2c332e;
+  --text:#e8ece8;
+  --muted:#b0b9b1;
+  --border:#48534a;
+  --accent:#a2b5a1;
+  --accent-light:#39483d;
+  --fixed:#374039;
+  --selected:#425847;
+  --error:#633e3e;
+}
+
+body.high {
+  --bg:#000;
+  --surface:#080808;
+  --text:#fff;
+  --muted:#fff;
+  --border:#fff;
+  --accent:#ffeb00;
+  --accent-light:#333300;
+  --fixed:#222;
+  --selected:#554d00;
+  --error:#790000;
+}
+
+body.large .cell {font-size:27px}
+body.large .number {font-size:23px}
+
+button,select {font:inherit}
+
+button {
+  cursor:pointer;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text);
+  border-radius:8px;
+  padding:10px 13px;
+  transition:background .15s;
+}
+
+button:hover {border-color:var(--accent)}
+
+button:focus-visible,
+.cell:focus-visible {
+  outline:3px solid var(--accent);
+  outline-offset:2px;
+}
+
+button:disabled {opacity:.5;cursor:not-allowed}
+
+header {
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:16px 5%;
+}
+
+nav {
+  max-width:1050px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+
+.brand {
+  font-size:21px;
+  font-weight:bold;
+  letter-spacing:-.5px;
+}
+
+.brand span {color:var(--accent)}
+
+.nav-actions {display:flex;gap:7px;flex-wrap:wrap}
+
+main {
+  max-width:1050px;
+  margin:35px auto;
+  padding:0 16px;
+}
+
+.hero {margin-bottom:24px}
+
+.hero h1 {
+  font-size:30px;
+  margin:5px 0;
+}
+
+.hero p {
+  color:var(--muted);
+  margin:0;
+}
+
+.layout {
+  display:grid;
+  grid-template-columns:1.35fr .8fr;
+  gap:18px;
+  align-items:start;
+}
+
+.card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:18px;
+  margin-bottom:15px;
+}
+
+.topbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:15px;
+}
+
+.stats {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-bottom:16px;
+}
+
+.stat {
+  background:var(--accent-light);
+  border-radius:8px;
+  padding:9px;
+  text-align:center;
+}
+
+.stat small {
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.stat strong {font-size:18px}
+
+.board {
+  display:grid;
+  grid-template-columns:repeat(9,1fr);
+  width:100%;
+  max-width:510px;
+  aspect-ratio:1;
+  margin:auto;
+  border:2px solid var(--text);
+  border-radius:5px;
+  overflow:hidden;
+}
+
+.cell {
+  min-width:0;
+  padding:0;
+  border:0;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  border-radius:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:clamp(16px,3vw,24px);
+  font-weight:600;
+  position:relative;
+}
+
+.cell:nth-child(3n) {
+  border-right:2px solid var(--text);
+}
+
+.cell:nth-child(9n) {border-right:0}
+
 .cell:nth-child(n+19):nth-child(-n+27),
-.cell:nth-child(n+46):nth-child(-n+54){
- border-bottom:2px solid var(--text)}
-.cell.fixed{background:var(--fixed);font-weight:900}
-.cell.related{background:var(--soft)}
-.cell.selected{background:#bfdbfe;color:#172554;
- box-shadow:inset 0 0 0 3px #2563eb}
-.cell.same{background:#bbf7d0;color:#14532d}
-.cell.error{background:#fecaca;color:#7f1d1d}
-.numbers{display:grid;grid-template-columns:repeat(9,1fr);
- gap:5px;max-width:520px;margin:15px auto}
-.numbers button{font-size:20px;padding:12px 0}
-.tools{display:grid;grid-template-columns:repeat(3,1fr);
- gap:8px;margin-top:10px}
-select{padding:9px;border:1px solid var(--line);
- border-radius:8px;background:var(--card);color:var(--text)}
-.setting{display:flex;justify-content:space-between;
- align-items:center;gap:10px;margin:13px 0}
-.message{background:var(--soft);padding:12px;
- border-radius:9px;margin-top:12px;font-size:14px}
-.instructions{color:var(--muted);line-height:1.8;
- padding-left:20px;font-size:14px}
-footer{text-align:center;color:var(--muted);
- padding:25px;font-size:13px}
-body.large .cell{font-size:clamp(21px,4vw,30px)}
-@media(max-width:750px){
- .layout{grid-template-columns:1fr}
- .hero h1{font-size:28px}
+.cell:nth-child(n+46):nth-child(-n+54) {
+  border-bottom:2px solid var(--text);
+}
+
+.cell.fixed {
+  background:var(--fixed);
+  font-weight:800;
+}
+
+.cell.related {background:var(--accent-light)}
+
+.cell.selected {
+  background:var(--selected);
+  box-shadow:inset 0 0 0 2px var(--accent);
+}
+
+.cell.same {background:var(--selected)}
+
+.cell.error {background:var(--error)}
+
+.cell .notes {
+  position:absolute;
+  inset:1px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(3,1fr);
+  font-size:clamp(7px,1.5vw,10px);
+  font-weight:normal;
+  pointer-events:none;
+  align-items:center;
+  justify-items:center;
+}
+
+.numbers {
+  display:grid;
+  grid-template-columns:repeat(9,1fr);
+  gap:5px;
+  max-width:510px;
+  margin:15px auto;
+}
+
+.number {
+  font-size:19px;
+  font-weight:bold;
+  padding:11px 0;
+}
+
+.number:hover {background:var(--accent-light)}
+
+.controls {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+  margin-top:9px;
+}
+
+.primary {
+  background:var(--accent);
+  color:white;
+  border-color:var(--accent);
+}
+
+.active {background:var(--accent-light)}
+
+select {
+  background:var(--surface);
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:8px;
+}
+
+.setting {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin:13px 0;
+  font-size:14px;
+}
+
+.setting input {
+  width:18px;
+  height:18px;
+  accent-color:var(--accent);
+}
+
+.card h3 {font-size:16px;margin:0 0 13px}
+
+.muted {color:var(--muted);font-size:13px;line-height:1.6}
+
+.message {
+  background:var(--accent-light);
+  padding:12px;
+  border-radius:8px;
+  margin-top:12px;
+  font-size:13px;
+  min-height:44px;
+}
+
+.hintbox {
+  background:var(--accent-light);
+  padding:12px;
+  border-radius:8px;
+  margin-top:12px;
+  font-size:13px;
+  line-height:1.6;
+  display:none;
+}
+
+.instructions {
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.8;
+  padding-left:19px;
+}
+
+footer {
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  padding:25px;
+}
+
+@media(max-width:750px) {
+  .layout {grid-template-columns:1fr}
+  main {margin-top:22px}
+  .hero h1 {font-size:25px}
+  .card {padding:13px}
 }
 </style>
 </head>
+
 <body>
+
 <header>
 <nav>
-<div class="logo">▦ Sudoku Access</div>
-<div>
-<button id="theme">🌙 Dark Mode</button>
-<button id="contrast">◐ Contrast</button>
-</div>
+  <div class="brand">Sudoku <span>Access</span></div>
+  <div class="nav-actions">
+    <button id="theme">Dark Mode</button>
+    <button id="contrast">High Contrast</button>
+  </div>
 </nav>
 </header>
 
 <main>
+
 <div class="hero">
-<h1>Sudoku Access</h1>
-<p>Play smarter. Play comfortably. Play without limits.</p>
+  <h1>A little challenge, at your own pace.</h1>
+  <p>A simple, comfortable and accessible Sudoku experience.</p>
 </div>
 
 <div class="layout">
+
 <section class="card">
+
+<div class="topbar">
+  <div>
+    <strong id="levelTitle">Easy Puzzle</strong>
+    <div class="muted">Select an empty cell to begin.</div>
+  </div>
+  <button id="relax">Relax Mode: OFF</button>
+</div>
+
 <div class="stats">
-<div><small>TIME</small><strong id="timer">00:00</strong></div>
-<div><small>FILLED</small><strong id="filled">0/81</strong></div>
-<div><small>MISTAKES</small><strong id="mistakes">0</strong></div>
+  <div class="stat">
+    <small>TIME</small>
+    <strong id="timer">00:00</strong>
+  </div>
+  <div class="stat">
+    <small>COMPLETED</small>
+    <strong id="filled">0/81</strong>
+  </div>
+  <div class="stat">
+    <small>PUZZLES SOLVED</small>
+    <strong id="solved">0</strong>
+  </div>
 </div>
 
-<div id="board" class="board" aria-label="Sudoku board"></div>
-<div id="numbers" class="numbers"></div>
+<div class="board" id="board" role="group"
+     aria-label="Sudoku puzzle board"></div>
 
-<div class="tools">
-<button id="erase">⌫ Erase</button>
-<button id="notes">✎ Notes: OFF</button>
-<button id="hint">💡 Hint</button>
+<div class="numbers" id="numbers"></div>
+
+<div class="controls">
+  <button id="erase">Erase</button>
+  <button id="notes">Notes: OFF</button>
+  <button id="hint">Smart Hint</button>
 </div>
-<div class="tools">
-<button id="pause">Ⅱ Pause</button>
-<button id="check">✓ Check</button>
-<button class="primary" id="new">＋ New Game</button>
+
+<div class="controls">
+  <button id="pause">Pause</button>
+  <button id="check">Check</button>
+  <button class="primary" id="new">New Game</button>
 </div>
-<div class="message" id="message" role="status" aria-live="polite">
-Welcome! Select an empty square to start playing.
+
+<div class="message" id="message" role="status"
+     aria-live="polite">
+  Welcome to Sudoku Access! Select a square and choose a number.
 </div>
+
+<div class="hintbox" id="hintbox"></div>
+
 </section>
 
 <aside>
+
 <section class="card">
-<h3>⚙️ Game Settings</h3>
+<h3>Game Settings</h3>
+
 <div class="setting">
-<label for="level">Difficulty</label>
-<select id="level">
+<label for="difficulty">Difficulty</label>
+<select id="difficulty">
 <option>Easy</option>
 <option>Medium</option>
 <option>Hard</option>
 </select>
 </div>
+
 <div class="setting">
 <label for="size">Number Size</label>
 <select id="size">
@@ -144,266 +430,493 @@ Welcome! Select an empty square to start playing.
 <option value="large">Large</option>
 </select>
 </div>
+
 <div class="setting">
 <label for="voice">Voice Assistance</label>
 <input type="checkbox" id="voice">
 </div>
+
+<div class="setting">
+<label for="focus">Focus Lens</label>
+<input type="checkbox" id="focus" checked>
+</div>
 </section>
 
 <section class="card">
-<h3>📖 How to Play</h3>
+<h3>Smart Hint Coach</h3>
+<p class="muted">
+Need some help? Smart Hint Coach explains the
+reasoning behind a number instead of simply
+giving you an answer.
+</p>
+<button id="coach">Explain Selected Cell</button>
+</section>
+
+<section class="card">
+<h3>Accessibility Studio</h3>
+<p class="muted">
+Customize the game to make playing more comfortable.
+</p>
+<button id="resetSettings">Reset Appearance</button>
+</section>
+
+<section class="card">
+<h3>How to Play</h3>
 <ol class="instructions">
-<li>Fill the empty squares using numbers 1 to 9.</li>
-<li>Each row must contain numbers without repetition.</li>
-<li>Each column must contain numbers without repetition.</li>
-<li>Each 3×3 box must contain numbers without repetition.</li>
-<li>Use Notes to remember possible numbers.</li>
-<li>Use Hint when you need help.</li>
+<li>Fill the empty cells using numbers 1 to 9.</li>
+<li>Every row must contain numbers without repetition.</li>
+<li>Every column must contain numbers without repetition.</li>
+<li>Every 3×3 box must contain numbers without repetition.</li>
+<li>Use Notes to remember possible answers.</li>
+<li>Complete the puzzle to win!</li>
 </ol>
-<button id="read">🔊 Read Instructions</button>
+<button id="read">Read Instructions</button>
 </section>
 
 <section class="card">
-<h3>♿ Accessibility Features</h3>
-<p class="instructions">
-High contrast mode, larger numbers, voice assistance,
-simple controls, and beginner-friendly instructions.
+<h3>Your Progress</h3>
+<p class="muted">
+Puzzles successfully completed:
+<strong id="totalSolved">0</strong>
+</p>
+<p class="muted">
+Keep practicing and improve your skills one puzzle at a time.
 </p>
 </section>
+
 </aside>
 </div>
 </main>
 
-<footer>Sudoku Access | HCI2 Usability Testing Prototype</footer>
+<footer>
+Sudoku Access · HCI2 Accessibility Prototype
+<br>
+Simple by design. Accessible to everyone.
+</footer>
 
 <script>
-const puzzles={
+
+const puzzles = {
 Easy:[
 '530070000','600195000','098000060',
 '800060003','400803001','700020006',
-'060000280','000419005','000080079'],
+'060000280','000419005','000080079'
+],
 Medium:[
 '003020600','900305001','001806400',
 '008102900','700000008','006708200',
-'002609500','800203009','005010300'],
+'002609500','800203009','005010300'
+],
 Hard:[
 '000260701','680070090','190004500',
 '820100040','004602900','050003028',
-'009300074','040050036','703018000']
+'009300074','040050036','703018000'
+]
 };
-const solutions={
+
+const solutions = {
 Easy:[
 '534678912','672195348','198342567',
 '859761423','426853791','713924856',
-'961537284','287419635','345286179'],
+'961537284','287419635','345286179'
+],
 Medium:[
 '483921657','967345821','251876493',
 '548132976','729564138','136798245',
-'372689514','814253769','695417382'],
+'372689514','814253769','695417382'
+],
 Hard:[
 '435269781','682571493','197834562',
 '826195347','374682915','951743628',
-'519326874','248957136','763418259']
+'519326874','248957136','763418259'
+]
 };
 
-const $=id=>document.getElementById(id);
-let level='Easy',initial,grid,solution;
-let selected=0,mistakes=0,seconds=0;
-let paused=false,notesMode=false;
-let notes=[],clock,colorMode=false;
+const $ = id => document.getElementById(id);
 
-function message(t){
- $('message').textContent=t;
- if($('voice').checked && 'speechSynthesis' in window){
- speechSynthesis.cancel();
- speechSynthesis.speak(new SpeechSynthesisUtterance(t));
- }
+let level='Easy';
+let initial,grid,solution;
+let selected=0;
+let notes=[];
+let noteMode=false;
+let paused=false;
+let relax=false;
+let seconds=0;
+let timer;
+let solved=Number(localStorage.getItem('sudokuSolved')||0);
+let completed=false;
+
+$('solved').textContent=solved;
+$('totalSolved').textContent=solved;
+
+function speak(text) {
+  if(!$('voice').checked)return;
+  if(!('speechSynthesis' in window))return;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(new SpeechSynthesisUtterance(text));
 }
 
-function start(){
- clearInterval(clock);
- seconds=0;mistakes=0;selected=0;
- paused=false;notesMode=false;
- level=$('level').value;
- initial=puzzles[level].map(r=>r.split('').map(Number));
- grid=initial.map(r=>r.slice());
- solution=solutions[level].map(r=>r.split('').map(Number));
- notes=Array.from({length:81},()=>new Set());
- $('timer').textContent='00:00';
- $('pause').textContent='Ⅱ Pause';
- $('notes').textContent='✎ Notes: OFF';
- $('level').value=level;
- render();
- message('New '+level+' puzzle ready. Good luck!');
- clock=setInterval(()=>{
- if(!paused){
- seconds++;
- $('timer').textContent=
- String(Math.floor(seconds/60)).padStart(2,'0')+':'+
- String(seconds%60).padStart(2,'0');
- }
- },1000);
+function message(text) {
+  $('message').textContent=text;
+  speak(text);
 }
 
-function valid(r,c,n){
- for(let i=0;i<9;i++){
- if(i!==c && grid[r][i]===n)return false;
- if(i!==r && grid[i][c]===n)return false;
- }
- let br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;
- for(let y=br;y<br+3;y++)
- for(let x=bc;x<bc+3;x++)
- if((y!==r||x!==c)&&grid[y][x]===n)return false;
- return true;
+function startGame() {
+  clearInterval(timer);
+
+  level=$('difficulty').value;
+  initial=puzzles[level].map(r=>r.split('').map(Number));
+  grid=initial.map(r=>r.slice());
+  solution=solutions[level].map(r=>r.split('').map(Number));
+
+  notes=Array.from({length:81},()=>new Set());
+
+  selected=0;
+  seconds=0;
+  paused=false;
+  noteMode=false;
+  completed=false;
+
+  $('levelTitle').textContent=level+' Puzzle';
+  $('timer').textContent='00:00';
+  $('pause').textContent='Pause';
+  $('notes').textContent='Notes: OFF';
+  $('hintbox').style.display='none';
+
+  render();
+  message('New '+level.toLowerCase()+' puzzle ready!');
+
+  timer=setInterval(()=>{
+    if(!paused&&!relax&&!completed){
+      seconds++;
+      $('timer').textContent=
+      String(Math.floor(seconds/60)).padStart(2,'0')+':'+
+      String(seconds%60).padStart(2,'0');
+    }
+  },1000);
 }
 
-function render(){
- const board=$('board');
- board.innerHTML='';
- let sr=Math.floor(selected/9),sc=selected%9;
- let selectedValue=grid[sr][sc];
+function valid(r,c,n) {
+  for(let i=0;i<9;i++){
+    if(i!==c&&grid[r][i]===n)return false;
+    if(i!==r&&grid[i][c]===n)return false;
+  }
 
- for(let i=0;i<81;i++){
- let r=Math.floor(i/9),c=i%9,n=grid[r][c];
- let b=document.createElement('button');
- b.className='cell';
- if(initial[r][c])b.classList.add('fixed');
- if(i===selected)b.classList.add('selected');
- else if(r===sr||c===sc||
- (Math.floor(r/3)===Math.floor(sr/3)&&
- Math.floor(c/3)===Math.floor(sc/3)))
- b.classList.add('related');
- if(selectedValue&&n===selectedValue&&i!==selected)
- b.classList.add('same');
- if(n&&!valid(r,c,n))b.classList.add('error');
+  let br=Math.floor(r/3)*3;
+  let bc=Math.floor(c/3)*3;
 
- b.textContent=n||'';
- b.setAttribute('aria-label',
- 'Row '+(r+1)+', column '+(c+1)+', '+(n||'empty'));
- b.onclick=()=>{
- if(paused)return;
- selected=i;render();
- };
- board.appendChild(b);
- }
- $('filled').textContent=
- grid.flat().filter(Boolean).length+'/81';
- $('mistakes').textContent=mistakes;
+  for(let y=br;y<br+3;y++){
+    for(let x=bc;x<bc+3;x++){
+      if((y!==r||x!==c)&&grid[y][x]===n)return false;
+    }
+  }
+  return true;
 }
 
-function enter(n){
- if(paused)return message('Resume the game first.');
- let r=Math.floor(selected/9),c=selected%9;
- if(initial[r][c])return message('This number is fixed.');
- if(notesMode){
- if(notes[selected].has(n))notes[selected].delete(n);
- else notes[selected].add(n);
- message('Note updated.');
- return;
- }
- grid[r][c]=n;
- render();
- if(n!==solution[r][c]){
- mistakes++;
- $('mistakes').textContent=mistakes;
- message('Incorrect number. Try again!');
- }else{
- message('Correct! Keep going.');
- }
- if(grid.every((row,y)=>row.every((v,x)=>v===solution[y][x]))){
- clearInterval(clock);
- message('Congratulations! You solved the puzzle! 🎉');
- }
+function render() {
+  const board=$('board');
+  board.innerHTML='';
+
+  let sr=Math.floor(selected/9);
+  let sc=selected%9;
+  let value=grid[sr][sc];
+
+  for(let i=0;i<81;i++){
+    let r=Math.floor(i/9);
+    let c=i%9;
+    let n=grid[r][c];
+
+    let cell=document.createElement('button');
+    cell.className='cell';
+    cell.type='button';
+
+    if(initial[r][c])cell.classList.add('fixed');
+
+    if(i===selected){
+      cell.classList.add('selected');
+    }else if($('focus').checked&&(
+      r===sr||c===sc||
+      (Math.floor(r/3)===Math.floor(sr/3)&&
+       Math.floor(c/3)===Math.floor(sc/3))
+    )){
+      cell.classList.add('related');
+    }
+
+    if(value&&n===value&&i!==selected){
+      cell.classList.add('same');
+    }
+
+    if(n&&!valid(r,c,n)){
+      cell.classList.add('error');
+    }
+
+    cell.setAttribute('aria-label',
+      'Row '+(r+1)+', column '+(c+1)+', '+(n||'empty')
+    );
+
+    cell.textContent=n||'';
+
+    if(!n&&notes[i].size){
+      let wrap=document.createElement('span');
+      wrap.className='notes';
+
+      for(let k=1;k<=9;k++){
+        let item=document.createElement('span');
+        item.textContent=notes[i].has(k)?k:'';
+        wrap.appendChild(item);
+      }
+      cell.appendChild(wrap);
+    }
+
+    cell.onclick=()=>{
+      if(paused)return;
+      selected=i;
+      render();
+    };
+
+    board.appendChild(cell);
+  }
+
+  $('filled').textContent=
+    grid.flat().filter(Boolean).length+'/81';
+}
+
+function enter(n) {
+  if(paused)return message('Resume the game first.');
+
+  let r=Math.floor(selected/9);
+  let c=selected%9;
+
+  if(initial[r][c]){
+    return message('This number is fixed. Choose an empty cell.');
+  }
+
+  if(noteMode){
+    if(notes[selected].has(n)){
+      notes[selected].delete(n);
+    }else{
+      notes[selected].add(n);
+    }
+    render();
+    message('Notes updated.');
+    return;
+  }
+
+  if(n!==solution[r][c]){
+    grid[r][c]=n;
+    render();
+    message('That number is not correct. You can try again.');
+    return;
+  }
+
+  grid[r][c]=n;
+  notes[selected].clear();
+  render();
+  message('Correct! Well done.');
+
+  if(grid.every((row,y)=>
+    row.every((v,x)=>v===solution[y][x])
+  )){
+    completed=true;
+    clearInterval(timer);
+    solved++;
+    localStorage.setItem('sudokuSolved',solved);
+    $('solved').textContent=solved;
+    $('totalSolved').textContent=solved;
+    message('Congratulations! You completed the Sudoku puzzle!');
+  }
 }
 
 for(let n=1;n<=9;n++){
- let b=document.createElement('button');
- b.textContent=n;
- b.onclick=()=>enter(n);
- $('numbers').appendChild(b);
+  let btn=document.createElement('button');
+  btn.className='number';
+  btn.textContent=n;
+  btn.onclick=()=>enter(n);
+  $('numbers').appendChild(btn);
 }
 
 $('erase').onclick=()=>{
- if(paused)return;
- let r=Math.floor(selected/9),c=selected%9;
- if(initial[r][c])return message('Cannot erase a fixed number.');
- grid[r][c]=0;
- notes[selected].clear();
- render();message('Square erased.');
+  if(paused)return;
+  let r=Math.floor(selected/9);
+  let c=selected%9;
+
+  if(initial[r][c]){
+    return message('You cannot erase a fixed number.');
+  }
+
+  grid[r][c]=0;
+  notes[selected].clear();
+  render();
+  message('Cell erased.');
 };
 
 $('notes').onclick=()=>{
- notesMode=!notesMode;
- $('notes').textContent='✎ Notes: '+(notesMode?'ON':'OFF');
- message(notesMode?'Notes mode enabled.':'Notes mode disabled.');
+  noteMode=!noteMode;
+  $('notes').textContent='Notes: '+(noteMode?'ON':'OFF');
+  $('notes').classList.toggle('active',noteMode);
+  message(noteMode?'Notes mode enabled.':'Notes mode disabled.');
 };
 
 $('hint').onclick=()=>{
- if(paused)return;
- let r=Math.floor(selected/9),c=selected%9;
- if(initial[r][c])return message('Select an empty square.');
- grid[r][c]=solution[r][c];
- notes[selected].clear();
- render();message('Hint added!');
+  if(paused)return;
+  let r=Math.floor(selected/9);
+  let c=selected%9;
+
+  if(initial[r][c]){
+    return message('Select an empty cell first.');
+  }
+
+  let answer=solution[r][c];
+  grid[r][c]=answer;
+  notes[selected].clear();
+  render();
+
+  $('hintbox').style.display='block';
+  $('hintbox').textContent=
+    'Hint: The correct number for row '+(r+1)+
+    ', column '+(c+1)+' is '+answer+
+    '. It is the number that completes the solution without repeating in its row, column or box.';
+
+  message('A hint has been provided.');
+};
+
+$('coach').onclick=()=>{
+  let r=Math.floor(selected/9);
+  let c=selected%9;
+
+  if(grid[r][c]){
+    return message('Select an empty cell to receive coaching.');
+  }
+
+  let answer=solution[r][c];
+  let possible=[];
+
+  for(let n=1;n<=9;n++){
+    if(valid(r,c,n))possible.push(n);
+  }
+
+  let text='Focus Lens is showing row '+(r+1)+
+    ', column '+(c+1)+
+    ' and its 3 by 3 box. ';
+
+  if(possible.length===1){
+    text+='Only '+possible[0]+' can fit in this cell. This is a single-candidate solution.';
+  }else{
+    text+='Possible numbers are '+possible.join(', ')+
+      '. The solution is '+answer+
+      '. Compare the row, column and box to understand why other numbers are excluded.';
+  }
+
+  $('hintbox').style.display='block';
+  $('hintbox').textContent=text;
+  message('Smart Hint Coach is ready to help.');
 };
 
 $('pause').onclick=()=>{
- paused=!paused;
- $('pause').textContent=paused?'▶ Resume':'Ⅱ Pause';
- message(paused?'Game paused.':'Game resumed.');
+  paused=!paused;
+  $('pause').textContent=paused?'Resume':'Pause';
+  message(paused?'Game paused. Take a break.':'Game resumed.');
 };
 
 $('check').onclick=()=>{
- let errors=0;
- grid.forEach((row,r)=>row.forEach((n,c)=>{
- if(n&&!valid(r,c,n))errors++;
- }));
- message(errors?
- errors+' conflicting entries found. Review your answers.':
- 'No conflicting numbers found!');
+  let errors=0;
+
+  grid.forEach((row,r)=>{
+    row.forEach((n,c)=>{
+      if(n&&!valid(r,c,n))errors++;
+    });
+  });
+
+  message(errors?
+    errors+' conflicting entries found. Review your answers.':
+    'No row, column or box conflicts found.'
+  );
 };
 
-$('new').onclick=start;
-$('level').onchange=start;
+$('new').onclick=startGame;
+$('difficulty').onchange=startGame;
+
+$('relax').onclick=()=>{
+  relax=!relax;
+  $('relax').textContent='Relax Mode: '+(relax?'ON':'OFF');
+  message(relax?
+    'Relax Mode enabled. The timer is paused.':
+    'Relax Mode disabled. Timer resumed.'
+  );
+};
 
 $('theme').onclick=()=>{
- document.body.classList.toggle('dark');
- $('theme').textContent=document.body.classList.contains('dark')?
- '☀ Light Mode':'🌙 Dark Mode';
+  document.body.classList.toggle('dark');
+  $('theme').textContent=
+    document.body.classList.contains('dark')?
+    'Light Mode':'Dark Mode';
 };
 
 $('contrast').onclick=()=>{
- document.body.classList.toggle('contrast');
+  document.body.classList.toggle('high');
 };
 
 $('size').onchange=e=>{
- document.body.classList.toggle('large',e.target.value==='large');
+  document.body.classList.toggle(
+    'large',e.target.value==='large'
+  );
+};
+
+$('focus').onchange=render;
+
+$('resetSettings').onclick=()=>{
+  document.body.classList.remove('dark','high','large');
+  $('size').value='normal';
+  $('focus').checked=true;
+  $('theme').textContent='Dark Mode';
+  render();
+  message('Appearance settings restored.');
 };
 
 $('read').onclick=()=>{
- let t='Welcome to Sudoku Access. Fill every row, column, and three by three box using numbers one to nine without repeating numbers.';
- if('speechSynthesis'in window){
- speechSynthesis.cancel();
- speechSynthesis.speak(new SpeechSynthesisUtterance(t));
- }else message('Voice assistance is not supported by this browser.');
+  let text='Welcome to Sudoku Access. Fill every row, column and three by three box using numbers one through nine. Select an empty cell, then choose a number. Use Smart Hint Coach if you need help.';
+
+  if('speechSynthesis' in window){
+    speechSynthesis.cancel();
+    speechSynthesis.speak(
+      new SpeechSynthesisUtterance(text)
+    );
+  }else{
+    message('Voice reading is not supported in this browser.');
+  }
 };
 
 document.addEventListener('keydown',e=>{
- if(e.target.tagName==='SELECT')return;
- if(e.key>='1'&&e.key<='9')enter(Number(e.key));
- if(e.key==='Backspace'||e.key==='Delete')$('erase').click();
- if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
- e.preventDefault();
- let r=Math.floor(selected/9),c=selected%9;
- if(e.key==='ArrowUp')r=Math.max(0,r-1);
- if(e.key==='ArrowDown')r=Math.min(8,r+1);
- if(e.key==='ArrowLeft')c=Math.max(0,c-1);
- if(e.key==='ArrowRight')c=Math.min(8,c+1);
- selected=r*9+c;render();
- }
+  if(e.target.tagName==='SELECT')return;
+
+  if(e.key>='1'&&e.key<='9'){
+    enter(Number(e.key));
+  }
+
+  if(e.key==='Backspace'||e.key==='Delete'){
+    $('erase').click();
+  }
+
+  if([
+    'ArrowUp','ArrowDown','ArrowLeft','ArrowRight'
+  ].includes(e.key)){
+    e.preventDefault();
+
+    let r=Math.floor(selected/9);
+    let c=selected%9;
+
+    if(e.key==='ArrowUp')r=Math.max(0,r-1);
+    if(e.key==='ArrowDown')r=Math.min(8,r+1);
+    if(e.key==='ArrowLeft')c=Math.max(0,c-1);
+    if(e.key==='ArrowRight')c=Math.min(8,c+1);
+
+    selected=r*9+c;
+    render();
+  }
 });
 
-start();
+startGame();
+
 </script>
 </body>
 </html>
