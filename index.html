@@ -4,97 +4,98 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#f7f7f1">
+<meta name="theme-color" content="#f6f6f0">
 <title>Sudoku Access</title>
 
 <style>
 :root {
---bg:#f6f6f0;
---card:#fff;
---ink:#202d28;
---muted:#737b76;
---line:#e2e5de;
---green:#668875;
---green-dark:#496b58;
---soft:#edf1eb;
---fixed:#f0f2ed;
---selected:#dce9df;
---danger:#f7e4e1;
---shadow:0 8px 24px rgba(34,48,40,.055);
+  --bg:#f6f6f0;
+  --card:#ffffff;
+  --ink:#202d28;
+  --muted:#737b76;
+  --line:#e2e5de;
+  --green:#668875;
+  --green-dark:#496b58;
+  --soft:#edf1eb;
+  --fixed:#f0f2ed;
+  --selected:#dce9df;
+  --danger:#f7e4e1;
+  --shadow:0 8px 24px rgba(34,48,40,.055);
 }
 
 * {box-sizing:border-box}
 
 body {
-margin:0;
-background:var(--bg);
-color:var(--ink);
-font-family:Arial,sans-serif;
-transition:background .2s,color .2s;
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:Arial,sans-serif;
+  transition:background .2s,color .2s;
 }
 
 body.dark {
---bg:#202722;
---card:#2b342e;
---ink:#edf1ed;
---muted:#b6c0b8;
---line:#465148;
---green:#91ad98;
---green-dark:#789781;
---soft:#37443a;
---fixed:#343e36;
---selected:#435b49;
---danger:#633e3b;
+  --bg:#202722;
+  --card:#2b342e;
+  --ink:#edf1ed;
+  --muted:#b6c0b8;
+  --line:#465148;
+  --green:#789781;
+  --green-dark:#a3bea9;
+  --soft:#37443a;
+  --fixed:#343e36;
+  --selected:#435b49;
+  --danger:#633e3b;
 }
 
 body.contrast {
---bg:#000;
---card:#080808;
---ink:#fff;
---muted:#fff;
---line:#fff;
---green:#ffeb00;
---green-dark:#ffeb00;
---soft:#282800;
---fixed:#222;
---selected:#514900;
---danger:#650000;
+  --bg:#000;
+  --card:#080808;
+  --ink:#fff;
+  --muted:#fff;
+  --line:#fff;
+  --green:#ffeb00;
+  --green-dark:#ffeb00;
+  --soft:#282800;
+  --fixed:#222;
+  --selected:#514900;
+  --danger:#650000;
 }
 
 button,select {font:inherit}
 
 button {
-cursor:pointer;
-border:1px solid var(--line);
-background:var(--card);
-color:var(--ink);
-border-radius:11px;
-padding:11px 16px;
-font-weight:650;
-transition:.15s;
+  cursor:pointer;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink);
+  border-radius:11px;
+  padding:11px 16px;
+  font-weight:650;
+  transition:.15s;
 }
 
 button:hover {
-border-color:var(--green);
-transform:translateY(-1px);
+  border-color:var(--green);
+  transform:translateY(-1px);
 }
 
 button:focus-visible,
 select:focus-visible,
+input:focus-visible,
 .cell:focus-visible {
-outline:3px solid var(--green);
-outline-offset:2px;
+  outline:3px solid var(--green);
+  outline-offset:2px;
 }
 
 button:disabled {
-opacity:.45;
-cursor:not-allowed;
+  opacity:.45;
+  cursor:not-allowed;
 }
 
 .primary {
-background:var(--green);
-border-color:var(--green);
-color:#fff;
+  background:var(--green);
+  border-color:var(--green);
+  color:#fff;
 }
 
 .primary:hover {background:var(--green-dark)}
@@ -102,333 +103,397 @@ color:#fff;
 .hidden {display:none!important}
 
 header {
-height:76px;
-background:var(--card);
-border-bottom:1px solid var(--line);
-display:flex;
-align-items:center;
-padding:0 5%;
-position:sticky;
-top:0;
-z-index:5;
+  min-height:76px;
+  background:var(--card);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  padding:10px 5%;
+  position:sticky;
+  top:0;
+  z-index:10;
 }
 
 .nav {
-width:100%;
-max-width:1450px;
-margin:auto;
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:18px;
+  width:100%;
+  max-width:1450px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
 }
 
 .brand {
-display:flex;
-align-items:center;
-gap:12px;
-font-size:25px;
-font-weight:800;
-letter-spacing:-1px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-size:25px;
+  font-weight:800;
+  letter-spacing:-1px;
+  white-space:nowrap;
 }
 
 .brand span {color:var(--green-dark)}
 
 .brandmark {
-width:42px;
-height:42px;
-border-radius:12px;
-background:var(--green);
-color:white;
-display:grid;
-place-items:center;
-font-size:23px;
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  background:var(--green);
+  color:white;
+  display:grid;
+  place-items:center;
+  font-size:23px;
 }
 
 .navlinks {
-display:flex;
-gap:8px;
-align-items:center;
-flex-wrap:wrap;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
 }
 
 .navlinks button {
-border:0;
-background:transparent;
+  border:0;
+  background:transparent;
 }
 
-.navlinks button:hover {background:var(--soft)}
+.navlinks button:hover,
+.navlinks button.active {
+  background:var(--soft);
+  color:var(--green-dark);
+}
 
 main {
-max-width:1450px;
-margin:0 auto;
-padding:34px 5% 25px;
+  max-width:1450px;
+  margin:0 auto;
+  padding:34px 5% 35px;
+  min-height:calc(100vh - 140px);
 }
 
 .eyebrow {
-font-size:11px;
-letter-spacing:2.3px;
-font-weight:800;
-color:var(--green-dark);
+  font-size:11px;
+  letter-spacing:2.3px;
+  font-weight:800;
+  color:var(--green-dark);
 }
 
 h1 {
-font-size:clamp(32px,4vw,56px);
-line-height:1.07;
-letter-spacing:-2px;
-margin:20px 0 18px;
-max-width:650px;
+  font-size:clamp(32px,4vw,56px);
+  line-height:1.07;
+  letter-spacing:-2px;
+  margin:20px 0 18px;
+  max-width:650px;
 }
 
 h2 {
-font-size:21px;
-letter-spacing:-.5px;
-margin:0 0 8px;
+  font-size:21px;
+  letter-spacing:-.5px;
+  margin:0 0 8px;
 }
 
 h3 {font-size:16px;margin:0 0 14px}
 
+p {line-height:1.6}
+
 .muted {color:var(--muted);line-height:1.55}
 
+/* HOME LANDING PAGE */
+
 .hero {
-display:grid;
-grid-template-columns:1fr 1.05fr;
-gap:28px;
-align-items:center;
-min-height:430px;
+  display:grid;
+  grid-template-columns:1fr 1.05fr;
+  gap:35px;
+  align-items:center;
+  min-height:420px;
 }
 
 .hero-copy {padding:20px 0}
 
 .hero-copy p {
-max-width:590px;
-font-size:17px;
+  max-width:590px;
+  font-size:17px;
 }
 
 .hero-actions {
-display:flex;
-gap:12px;
-flex-wrap:wrap;
-margin:25px 0 18px;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin:25px 0 18px;
 }
 
 .hero-actions button {
-min-width:190px;
-padding:15px 19px;
+  min-width:190px;
+  padding:16px 19px;
 }
 
 .features {
-display:flex;
-gap:24px;
-flex-wrap:wrap;
-color:var(--muted);
-font-size:14px;
-margin-top:20px;
+  display:flex;
+  gap:24px;
+  flex-wrap:wrap;
+  color:var(--muted);
+  font-size:14px;
+  margin-top:20px;
 }
 
-.features span {display:flex;gap:8px;align-items:center}
+.features span {
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
 .features b {color:var(--green-dark)}
 
 .hero-art {
-width:100%;
-border-radius:18px;
-overflow:hidden;
-box-shadow:var(--shadow);
-background:#e9eee7;
+  width:100%;
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  background:#e9eee7;
 }
 
 .hero-art svg {
-display:block;
-width:100%;
-height:auto;
+  display:block;
+  width:100%;
+  height:auto;
 }
 
-.dashboard {
-display:grid;
-grid-template-columns:1.08fr 1.08fr .95fr .95fr;
-gap:13px;
-margin-top:10px;
+/* HOME GAME OPTIONS */
+
+.home-options {
+  max-width:850px;
+  margin:35px auto 10px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
 }
 
 .card {
-background:var(--card);
-border:1px solid var(--line);
-border-radius:19px;
-padding:20px;
-box-shadow:var(--shadow);
-min-width:0;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:19px;
+  padding:22px;
+  box-shadow:var(--shadow);
+  min-width:0;
 }
 
 .cardhead {
-display:flex;
-align-items:center;
-gap:13px;
-margin-bottom:17px;
+  display:flex;
+  align-items:center;
+  gap:13px;
+  margin-bottom:17px;
 }
 
 .tileicon {
-width:52px;
-height:52px;
-border-radius:14px;
-background:var(--soft);
-color:var(--green-dark);
-display:grid;
-place-items:center;
-font-size:25px;
-flex-shrink:0;
+  width:48px;
+  height:48px;
+  border-radius:14px;
+  background:var(--soft);
+  color:var(--green-dark);
+  display:grid;
+  place-items:center;
+  font-size:24px;
+  flex-shrink:0;
 }
 
 .cardhead p {
-margin:3px 0 0;
-font-size:13px;
-color:var(--muted);
-line-height:1.4;
+  margin:3px 0 0;
+  font-size:13px;
+  color:var(--muted);
 }
-
-.stats {
-display:grid;
-grid-template-columns:repeat(3,1fr);
-border-top:1px solid var(--line);
-padding-top:17px;
-gap:5px;
-}
-
-.stat {
-text-align:center;
-border-right:1px solid var(--line);
-}
-
-.stat:last-child {border:0}
-
-.stat strong {
-display:block;
-font-size:21px;
-}
-
-.stat small {
-display:block;
-color:var(--muted);
-font-size:12px;
-margin-top:5px;
-}
-
-.progress {
-height:7px;
-border-radius:20px;
-background:var(--line);
-overflow:hidden;
-margin:13px 0;
-}
-
-.progress span {
-display:block;
-height:100%;
-background:var(--green);
-width:0;
-}
-
-.wide {width:100%;margin-top:15px}
 
 .levels {
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:7px;
-margin:16px 0;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin:18px 0;
 }
 
 .level {
-padding:12px 4px;
-text-align:center;
-background:var(--card);
+  padding:13px 4px;
+  text-align:center;
 }
 
 .level strong,.level small {display:block}
 
 .level small {
-font-size:11px;
-color:var(--muted);
-margin-top:5px;
+  font-size:11px;
+  color:var(--muted);
+  margin-top:5px;
 }
 
 .level.selected {
-border:2px solid var(--green);
-background:var(--soft);
+  border:2px solid var(--green);
+  background:var(--soft);
+}
+
+.wide {width:100%;margin-top:12px}
+
+.saved-preview {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:5px;
+  border-top:1px solid var(--line);
+  padding-top:16px;
+  margin-top:12px;
+}
+
+.saved-preview div {
+  text-align:center;
+  border-right:1px solid var(--line);
+}
+
+.saved-preview div:last-child {border:0}
+
+.saved-preview strong {
+  display:block;
+  font-size:20px;
+}
+
+.saved-preview small {
+  color:var(--muted);
+  font-size:11px;
+}
+
+.progress {
+  height:7px;
+  border-radius:20px;
+  background:var(--line);
+  overflow:hidden;
+  margin:14px 0;
+}
+
+.progress span {
+  display:block;
+  height:100%;
+  background:var(--green);
+  width:0;
+}
+
+/* INNER PAGES */
+
+.page-heading {margin:12px 0 28px}
+
+.page-heading h1 {
+  margin:13px 0 10px;
+}
+
+.page-heading p {max-width:650px}
+
+.page-container {
+  max-width:900px;
+  margin:auto;
+}
+
+.stats {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  border-top:1px solid var(--line);
+  padding-top:20px;
+  gap:5px;
+}
+
+.stat {
+  text-align:center;
+  border-right:1px solid var(--line);
+  padding:8px;
+}
+
+.stat:last-child {border:0}
+
+.stat strong {
+  display:block;
+  font-size:25px;
+}
+
+.stat small {
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  margin-top:6px;
 }
 
 .setting {
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:8px;
-padding:9px 0;
-border-bottom:1px solid var(--line);
-font-size:13px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:14px 0;
+  border-bottom:1px solid var(--line);
+  font-size:14px;
 }
 
 .setting:last-child {border:0}
 
 .setting select {
-max-width:125px;
-background:var(--card);
-color:var(--ink);
-border:1px solid var(--line);
-border-radius:8px;
-padding:7px;
+  min-width:135px;
+  background:var(--card);
+  color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:9px;
 }
 
 .setting input {
-accent-color:var(--green);
-width:17px;
-height:17px;
+  accent-color:var(--green);
+  width:19px;
+  height:19px;
 }
 
+.back-button {
+  margin-top:22px;
+}
+
+/* GAME SCREEN */
+
 .game-layout {
-display:grid;
-grid-template-columns:minmax(0,1fr) 300px;
-gap:16px;
-align-items:start;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 300px;
+  gap:16px;
+  align-items:start;
 }
 
 .game-card {padding:20px}
 
 .game-top {
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:9px;
-margin-bottom:15px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+  margin-bottom:15px;
 }
 
 .game-top .stat {
-background:var(--soft);
-border:0;
-border-radius:10px;
-padding:10px;
+  background:var(--soft);
+  border:0;
+  border-radius:10px;
+  padding:10px;
 }
 
 .board {
-display:grid;
-grid-template-columns:repeat(9,1fr);
-width:min(100%,540px);
-aspect-ratio:1;
-margin:0 auto;
-border:2px solid var(--ink);
-border-radius:5px;
-overflow:hidden;
-background:var(--card);
+  display:grid;
+  grid-template-columns:repeat(9,1fr);
+  width:min(100%,540px);
+  aspect-ratio:1;
+  margin:0 auto;
+  border:2px solid var(--ink);
+  border-radius:5px;
+  overflow:hidden;
+  background:var(--card);
 }
 
 .cell {
-position:relative;
-min-width:0;
-padding:0;
-border:0;
-border-right:1px solid var(--line);
-border-bottom:1px solid var(--line);
-border-radius:0;
-display:grid;
-place-items:center;
-font-size:clamp(17px,2.5vw,25px);
-font-weight:600;
+  position:relative;
+  min-width:0;
+  padding:0;
+  border:0;
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  border-radius:0;
+  display:grid;
+  place-items:center;
+  font-size:clamp(17px,2.5vw,25px);
+  font-weight:600;
 }
 
 .cell:nth-child(3n) {border-right:2px solid var(--ink)}
@@ -436,82 +501,113 @@ font-weight:600;
 
 .cell:nth-child(n+19):nth-child(-n+27),
 .cell:nth-child(n+46):nth-child(-n+54) {
-border-bottom:2px solid var(--ink);
+  border-bottom:2px solid var(--ink);
 }
 
 .cell.fixed {
-background:var(--fixed);
-font-weight:850;
+  background:var(--fixed);
+  font-weight:850;
 }
 
 .cell.related {background:var(--soft)}
 .cell.selected {
-background:var(--selected);
-box-shadow:inset 0 0 0 2px var(--green);
+  background:var(--selected);
+  box-shadow:inset 0 0 0 2px var(--green);
 }
 .cell.same {background:var(--selected)}
 .cell.error {background:var(--danger)}
 
 .numbers {
-display:grid;
-grid-template-columns:repeat(9,1fr);
-gap:5px;
-max-width:540px;
-margin:13px auto;
+  display:grid;
+  grid-template-columns:repeat(9,1fr);
+  gap:5px;
+  max-width:540px;
+  margin:13px auto;
 }
 
 .numbers button {
-padding:12px 0;
-font-size:19px;
+  padding:12px 0;
+  font-size:19px;
 }
 
 .game-actions {
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:7px;
-max-width:540px;
-margin:8px auto;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+  max-width:540px;
+  margin:8px auto;
 }
 
 .message {
-padding:12px;
-background:var(--soft);
-border-radius:10px;
-margin-top:12px;
-font-size:13px;
-line-height:1.5;
+  padding:12px;
+  background:var(--soft);
+  border-radius:10px;
+  margin-top:12px;
+  font-size:13px;
+  line-height:1.5;
 }
 
 .side .card {margin-bottom:13px}
 .side ol {padding-left:19px}
 .side li {margin:7px 0}
 
+body.large .cell {font-size:clamp(21px,3vw,31px)}
+
 .footer {
-text-align:center;
-color:var(--muted);
-font-size:12px;
-padding:24px;
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  padding:24px;
+  border-top:1px solid var(--line);
 }
 
-@media(max-width:1050px) {
-.dashboard {grid-template-columns:repeat(2,1fr)}
-.hero {grid-template-columns:1fr 1fr}
+/* RESPONSIVE DESIGN */
+
+@media(max-width:1000px) {
+  .hero {grid-template-columns:1fr 1fr}
+  .game-layout {grid-template-columns:1fr}
 }
 
 @media(max-width:700px) {
-header {height:auto;padding:12px 4%}
-.nav {align-items:flex-start;flex-direction:column}
-.brand {font-size:21px}
-.navlinks {width:100%;justify-content:space-between}
-.navlinks button {padding:8px}
-.hero {grid-template-columns:1fr;gap:8px}
-.hero-art {max-width:600px}
-.dashboard {grid-template-columns:1fr}
-.game-layout {grid-template-columns:1fr}
-.game-card {padding:12px}
-.cell {font-size:clamp(15px,5vw,23px)}
-main {padding:24px 4%}
-.card {padding:16px}
+  header {padding:12px 4%}
+  .nav {align-items:flex-start;flex-direction:column}
+  .brand {font-size:21px}
+  .navlinks {
+    width:100%;
+    justify-content:space-between;
+    gap:2px;
+  }
+  .navlinks button {
+    padding:9px 6px;
+    font-size:12px;
+  }
+  .hero {
+    grid-template-columns:1fr;
+    gap:10px;
+    min-height:auto;
+  }
+  .hero-art {max-width:600px}
+  .hero-copy {padding:10px 0}
+  .hero-copy p {font-size:15px}
+  .hero-actions button {
+    flex:1;
+    min-width:145px;
+    padding:13px 9px;
+  }
+  .home-options {grid-template-columns:1fr}
+  .game-layout {grid-template-columns:1fr}
+  .game-card {padding:12px}
+  .cell {font-size:clamp(15px,5vw,23px)}
+  main {padding:24px 4%}
+  .card {padding:16px}
+  .features {gap:12px;font-size:12px}
+  .page-heading h1 {font-size:36px}
+}
+
+@media(max-width:380px) {
+  .navlinks button {font-size:11px}
+  .brand {font-size:19px}
+  .game-actions button {padding:10px 5px;font-size:12px}
 }
 </style>
 </head>
@@ -519,978 +615,1189 @@ main {padding:24px 4%}
 <body>
 
 <header>
-<div class="nav">
- <div class="brand">
-  <div class="brandmark">▦</div>
-  Sudoku <span>Access</span>
- </div>
+  <div class="nav">
+    <div class="brand">
+      <div class="brandmark">▦</div>
+      Sudoku <span>Access</span>
+    </div>
 
- <div class="navlinks">
-  <button id="navHome">⌂ Home</button>
-  <button id="navProgress">▥ My Progress</button>
-  <button id="navSettings">⚙ Settings</button>
-  <button id="themeBtn">☼ Dark Mode</button>
- </div>
-</div>
+    <nav class="navlinks" aria-label="Main navigation">
+      <button id="navHome" class="active">⌂ Home</button>
+      <button id="navProgress">▥ My Progress</button>
+      <button id="navSettings">⚙ Settings</button>
+      <button id="themeBtn">☼ Dark Mode</button>
+    </nav>
+  </div>
 </header>
 
-<!-- HOMEPAGE / DASHBOARD -->
+<!-- HOME LANDING PAGE -->
 
 <main id="home">
 
-<section class="hero">
+  <section class="hero">
 
- <div class="hero-copy">
-  <div class="eyebrow">A PUZZLE FOR A BRIGHTER MIND</div>
+    <div class="hero-copy">
+      <div class="eyebrow">A PUZZLE FOR A BRIGHTER MIND</div>
 
-  <h1>Challenge yourself.<br>Play at your own pace.</h1>
+      <h1>Challenge yourself.<br>Play at your own pace.</h1>
 
-  <p class="muted">
-   Sudoku Access offers a simple, comfortable, and
-   accessible way to enjoy Sudoku. Improve your focus,
-   exercise your mind, and have fun anytime, anywhere.
-  </p>
+      <p class="muted">
+        Sudoku Access offers a simple, comfortable, and accessible
+        way to enjoy Sudoku. Improve your focus, exercise your mind,
+        and have fun anytime, anywhere.
+      </p>
 
-  <div class="hero-actions">
-   <button class="primary" id="heroNew">
-    ▶ &nbsp; Start a New Game
-   </button>
+      <div class="hero-actions">
+        <button class="primary" id="heroNew">
+          ▶ &nbsp; Start a New Game
+        </button>
 
-   <button id="heroContinue">
-    ◷ &nbsp; Continue Last Game
-   </button>
+        <button id="heroContinue">
+          ◷ &nbsp; Continue Last Game
+        </button>
+      </div>
+
+      <div class="features">
+        <span><b>◆</b> Relaxed Play</span>
+        <span><b>▥</b> 3 Difficulty Levels</span>
+        <span><b>♙</b> Accessible for Everyone</span>
+      </div>
+    </div>
+
+    <!-- SUDOKU ILLUSTRATION -->
+
+    <div class="hero-art">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 500">
+        <defs>
+          <linearGradient id="artbg" x1="0" y1="0" x2="1" y2="1">
+            <stop stop-color="#e9eee7"/>
+            <stop offset="1" stop-color="#dce6dc"/>
+          </linearGradient>
+          <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+            <feDropShadow dx="0" dy="12" stdDeviation="13"
+              flood-color="#34483b" flood-opacity=".16"/>
+          </filter>
+        </defs>
+
+        <rect width="760" height="500" rx="28" fill="url(#artbg)"/>
+        <circle cx="650" cy="90" r="42" fill="#fff" opacity=".38"/>
+        <circle cx="104" cy="390" r="65" fill="#fff" opacity=".28"/>
+
+        <g transform="translate(188 40) rotate(3 190 205)" filter="url(#shadow)">
+          <rect width="390" height="420" rx="24" fill="#fff"/>
+
+          <text x="30" y="43" font-family="Arial" font-size="14"
+            font-weight="700" letter-spacing="2" fill="#718778">
+            SUDOKU ACCESS
+          </text>
+
+          <text x="30" y="73" font-family="Arial" font-size="12" fill="#8a938c">
+            YOUR PUZZLE PREVIEW
+          </text>
+
+          <rect x="30" y="98" width="330" height="280"
+            rx="5" fill="#fff" stroke="#34443a" stroke-width="3"/>
+
+          <g stroke="#d9dfd8" stroke-width="1">
+            <path d="M66.67 98v280 M30 129.11h330"/>
+            <path d="M103.33 98v280 M30 160.22h330"/>
+            <path d="M140 98v280 M30 191.33h330"/>
+            <path d="M176.66 98v280 M30 222.44h330"/>
+            <path d="M213.33 98v280 M30 253.56h330"/>
+            <path d="M250 98v280 M30 284.67h330"/>
+            <path d="M286.66 98v280 M30 315.78h330"/>
+            <path d="M323.33 98v280 M30 346.89h330"/>
+          </g>
+
+          <g stroke="#34443a" stroke-width="3">
+            <path d="M140 98v280 M250 98v280 M30 191.3h330 M30 284.6h330"/>
+          </g>
+
+          <g font-family="Arial" font-size="21" font-weight="700"
+             text-anchor="middle" fill="#3c5143">
+            <text x="48" y="120">5</text>
+            <text x="85" y="120">3</text>
+            <text x="195" y="120">7</text>
+            <text x="48" y="151">6</text>
+            <text x="158" y="151">1</text>
+            <text x="195" y="151">9</text>
+            <text x="232" y="151">5</text>
+            <text x="85" y="182">9</text>
+            <text x="122" y="182">8</text>
+            <text x="305" y="182">6</text>
+            <text x="48" y="213">8</text>
+            <text x="195" y="213">6</text>
+            <text x="342" y="213">3</text>
+            <text x="48" y="244">4</text>
+            <text x="158" y="244">8</text>
+            <text x="232" y="244">3</text>
+            <text x="342" y="244">1</text>
+            <text x="48" y="276">7</text>
+            <text x="195" y="276">2</text>
+            <text x="342" y="276">6</text>
+            <text x="85" y="307">6</text>
+            <text x="268" y="307">2</text>
+            <text x="305" y="307">8</text>
+            <text x="158" y="338">4</text>
+            <text x="195" y="338">1</text>
+            <text x="232" y="338">9</text>
+            <text x="342" y="338">5</text>
+            <text x="195" y="369">8</text>
+            <text x="305" y="369">7</text>
+            <text x="342" y="369">9</text>
+          </g>
+
+          <rect x="30" y="392" width="112" height="8" rx="4" fill="#e4ebe4"/>
+          <rect x="30" y="392" width="62" height="8" rx="4" fill="#718f79"/>
+
+          <text x="360" y="405" font-family="Arial" font-size="11"
+            text-anchor="end" fill="#849087">
+            9 × 9 LOGIC PUZZLE
+          </text>
+        </g>
+
+        <g transform="translate(55 65)">
+          <rect width="105" height="42" rx="12" fill="#fff" opacity=".8"/>
+          <text x="52" y="26" text-anchor="middle" font-family="Arial"
+            font-size="13" font-weight="700" fill="#668875">FOCUS</text>
+        </g>
+
+        <g transform="translate(590 395)">
+          <rect width="112" height="48" rx="14" fill="#668875"/>
+          <text x="56" y="30" text-anchor="middle" font-family="Arial"
+            font-size="13" font-weight="700" fill="#fff">PLAY SMART</text>
+        </g>
+      </svg>
+    </div>
+
+  </section>
+
+  <!-- HOME GAME OPTIONS -->
+
+  <section class="home-options">
+
+    <article class="card">
+      <div class="cardhead">
+        <div class="tileicon">◷</div>
+        <div>
+          <h2>Continue Playing</h2>
+          <p>Pick up where you left off.</p>
+        </div>
+      </div>
+
+      <div class="saved-preview">
+        <div>
+          <strong id="homeFilled">0/81</strong>
+          <small>Cells filled</small>
+        </div>
+        <div>
+          <strong id="homeDifficulty">—</strong>
+          <small>Difficulty</small>
+        </div>
+        <div>
+          <strong id="homeTime">00:00</strong>
+          <small>Time spent</small>
+        </div>
+      </div>
+
+      <div class="progress">
+        <span id="homeProgress"></span>
+      </div>
+
+      <button class="primary wide" id="continueBtn">
+        ▶ &nbsp; Continue Last Game
+      </button>
+
+      <p class="muted" id="noSave" style="font-size:12px">
+        No saved game yet. Start a new puzzle.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="cardhead">
+        <div class="tileicon">▤</div>
+        <div>
+          <h2>Start a New Game</h2>
+          <p>Choose your difficulty and begin a fresh puzzle.</p>
+        </div>
+      </div>
+
+      <div class="levels">
+        <button class="level selected" data-level="Easy">
+          <strong>Easy</strong>
+          <small>Beginner</small>
+        </button>
+
+        <button class="level" data-level="Medium">
+          <strong>Medium</strong>
+          <small>Regular</small>
+        </button>
+
+        <button class="level" data-level="Hard">
+          <strong>Hard</strong>
+          <small>Advanced</small>
+        </button>
+      </div>
+
+      <button class="primary wide" id="newBtn">
+        ＋ &nbsp; Start New Game
+      </button>
+    </article>
+
+  </section>
+</main>
+
+<!-- MY PROGRESS PAGE -->
+
+<main id="progressPage" class="hidden">
+  <div class="page-container">
+
+    <div class="page-heading">
+      <div class="eyebrow">YOUR SUDOKU JOURNEY</div>
+      <h1>My Progress</h1>
+      <p class="muted">
+        See your achievements and track your improvement
+        as you continue playing Sudoku.
+      </p>
+    </div>
+
+    <section class="card">
+      <div class="cardhead">
+        <div class="tileicon">▥</div>
+        <div>
+          <h2>Your Statistics</h2>
+          <p>Overview of your completed puzzles.</p>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <strong id="solved">0</strong>
+          <small>Puzzles Solved</small>
+        </div>
+
+        <div class="stat">
+          <strong id="best">—</strong>
+          <small>Best Time</small>
+        </div>
+
+        <div class="stat">
+          <strong id="streak">0</strong>
+          <small>Current Streak</small>
+        </div>
+      </div>
+
+      <p class="muted" style="font-size:13px;margin-top:18px">
+        Your progress is saved on this device.
+      </p>
+    </section>
+
+    <button class="back-button" onclick="screen('home')">
+      ← Back to Home
+    </button>
+
   </div>
+</main>
 
-  <div class="features">
-   <span><b>◆</b> Relaxed Play</span>
-   <span><b>▥</b> 3 Difficulty Levels</span>
-   <span><b>♙</b> Accessible for Everyone</span>
+<!-- SETTINGS PAGE -->
+
+<main id="settingsPage" class="hidden">
+  <div class="page-container">
+
+    <div class="page-heading">
+      <div class="eyebrow">MAKE IT YOUR OWN</div>
+      <h1>Settings</h1>
+      <p class="muted">
+        Customize Sudoku Access to make your playing experience
+        more comfortable and accessible.
+      </p>
+    </div>
+
+    <section class="card">
+      <div class="cardhead">
+        <div class="tileicon">◐</div>
+        <div>
+          <h2>Appearance</h2>
+          <p>Choose how Sudoku Access looks.</p>
+        </div>
+      </div>
+
+      <div class="setting">
+        <label for="appearance">Display Theme</label>
+        <select id="appearance">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="contrast">High Contrast</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <div class="cardhead">
+        <div class="tileicon">♙</div>
+        <div>
+          <h2>Accessibility</h2>
+          <p>Adjust the game to suit your needs.</p>
+        </div>
+      </div>
+
+      <div class="setting">
+        <label for="numberSize">Number Size</label>
+        <select id="numberSize">
+          <option value="normal">Normal</option>
+          <option value="large">Large</option>
+        </select>
+      </div>
+
+      <div class="setting">
+        <label for="voice">Voice Assistance</label>
+        <input type="checkbox" id="voice">
+      </div>
+
+      <div class="setting">
+        <label for="focus">Focus Lens</label>
+        <input type="checkbox" id="focus" checked>
+      </div>
+
+      <div class="setting">
+        <label for="relaxSetting">Relax Mode</label>
+        <input type="checkbox" id="relaxSetting">
+      </div>
+    </section>
+
+    <button class="back-button" onclick="screen('home')">
+      ← Back to Home
+    </button>
+
   </div>
- </div>
-
- <div class="hero-art">
-  <svg xmlns="http://www.w3.org/2000/svg"
-       viewBox="0 0 760 500">
-   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-     <stop stop-color="#e9eee7"/>
-     <stop offset="1" stop-color="#dce6dc"/>
-    </linearGradient>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
-     <feDropShadow dx="0" dy="12" stdDeviation="13"
-       flood-color="#34483b" flood-opacity=".16"/>
-    </filter>
-   </defs>
-
-   <rect width="760" height="500" rx="28" fill="url(#bg)"/>
-   <circle cx="650" cy="90" r="42" fill="#fff" opacity=".38"/>
-   <circle cx="104" cy="390" r="65" fill="#fff" opacity=".28"/>
-
-   <g transform="translate(188 40) rotate(3 190 205)"
-      filter="url(#shadow)">
-    <rect width="390" height="420" rx="24" fill="#fff"/>
-
-    <text x="30" y="43" font-family="Arial"
-      font-size="14" font-weight="700"
-      letter-spacing="2" fill="#718778">
-      SUDOKU ACCESS
-    </text>
-
-    <text x="30" y="73" font-family="Arial"
-      font-size="12" fill="#8a938c">
-      YOUR PUZZLE PREVIEW
-    </text>
-
-    <rect x="30" y="98" width="330" height="280"
-      rx="5" fill="#fff" stroke="#34443a" stroke-width="3"/>
-
-    <g stroke="#d9dfd8" stroke-width="1">
-     <path d="M66.67 98v280 M30 129.11h330"/>
-     <path d="M103.33 98v280 M30 160.22h330"/>
-     <path d="M140 98v280 M30 191.33h330"/>
-     <path d="M176.66 98v280 M30 222.44h330"/>
-     <path d="M213.33 98v280 M30 253.56h330"/>
-     <path d="M250 98v280 M30 284.67h330"/>
-     <path d="M286.66 98v280 M30 315.78h330"/>
-     <path d="M323.33 98v280 M30 346.89h330"/>
-    </g>
-
-    <g stroke="#34443a" stroke-width="3">
-     <path d="M140 98v280 M250 98v280 M30 191.3h330 M30 284.6h330"/>
-    </g>
-
-    <g font-family="Arial" font-size="21"
-       font-weight="700" text-anchor="middle" fill="#3c5143">
-     <text x="48.33" y="120">5</text>
-     <text x="85" y="120">3</text>
-     <text x="194.99" y="120">7</text>
-     <text x="48.33" y="151.11">6</text>
-     <text x="158.33" y="151.11">1</text>
-     <text x="194.99" y="151.11">9</text>
-     <text x="231.66" y="151.11">5</text>
-     <text x="85" y="182.22">9</text>
-     <text x="121.66" y="182.22">8</text>
-     <text x="304.99" y="182.22">6</text>
-     <text x="48.33" y="213.33">8</text>
-     <text x="194.99" y="213.33">6</text>
-     <text x="341.66" y="213.33">3</text>
-     <text x="48.33" y="244.44">4</text>
-     <text x="158.33" y="244.44">8</text>
-     <text x="231.66" y="244.44">3</text>
-     <text x="341.66" y="244.44">1</text>
-     <text x="48.33" y="275.56">7</text>
-     <text x="194.99" y="275.56">2</text>
-     <text x="341.66" y="275.56">6</text>
-     <text x="85" y="306.67">6</text>
-     <text x="268.33" y="306.67">2</text>
-     <text x="304.99" y="306.67">8</text>
-     <text x="158.33" y="337.78">4</text>
-     <text x="194.99" y="337.78">1</text>
-     <text x="231.66" y="337.78">9</text>
-     <text x="341.66" y="337.78">5</text>
-     <text x="194.99" y="368.89">8</text>
-     <text x="304.99" y="368.89">7</text>
-     <text x="341.66" y="368.89">9</text>
-    </g>
-
-    <rect x="30" y="392" width="112" height="8"
-      rx="4" fill="#e4ebe4"/>
-    <rect x="30" y="392" width="62" height="8"
-      rx="4" fill="#718f79"/>
-
-    <text x="360" y="405" font-family="Arial"
-      font-size="11" text-anchor="end" fill="#849087">
-      9 × 9 LOGIC PUZZLE
-    </text>
-   </g>
-
-   <g transform="translate(55 65)">
-    <rect width="105" height="42" rx="12" fill="#fff" opacity=".8"/>
-    <text x="52" y="26" text-anchor="middle"
-      font-family="Arial" font-size="13"
-      font-weight="700" fill="#668875">FOCUS</text>
-   </g>
-
-   <g transform="translate(590 395)">
-    <rect width="112" height="48" rx="14" fill="#668875"/>
-    <text x="56" y="30" text-anchor="middle"
-      font-family="Arial" font-size="13"
-      font-weight="700" fill="#fff">PLAY SMART</text>
-   </g>
-  </svg>
- </div>
-
-</section>
-
-<!-- DASHBOARD CARDS -->
-
-<section class="dashboard">
-
- <article class="card">
-  <div class="cardhead">
-   <div class="tileicon">◷</div>
-   <div>
-    <h2>Continue Playing</h2>
-    <p>Pick up where you left off.</p>
-   </div>
-  </div>
-
-  <div class="stats">
-   <div class="stat">
-    <strong id="homeFilled">0/81</strong>
-    <small>Cells filled</small>
-   </div>
-   <div class="stat">
-    <strong id="homeDifficulty">—</strong>
-    <small>Difficulty</small>
-   </div>
-   <div class="stat">
-    <strong id="homeTime">00:00</strong>
-    <small>Time spent</small>
-   </div>
-  </div>
-
-  <div class="progress">
-   <span id="homeProgress"></span>
-  </div>
-
-  <button class="primary wide" id="continueBtn">
-   ▶ &nbsp; Continue Last Game
-  </button>
-
-  <p class="muted" id="noSave" style="font-size:12px">
-   No saved game yet. Start a new puzzle.
-  </p>
- </article>
-
- <article class="card">
-  <div class="cardhead">
-   <div class="tileicon">▤</div>
-   <div>
-    <h2>Start a New Game</h2>
-    <p>Choose your difficulty and begin a fresh puzzle.</p>
-   </div>
-  </div>
-
-  <div class="levels">
-   <button class="level selected" data-level="Easy">
-    <strong>Easy</strong><small>Beginner</small>
-   </button>
-   <button class="level" data-level="Medium">
-    <strong>Medium</strong><small>Regular</small>
-   </button>
-   <button class="level" data-level="Hard">
-    <strong>Hard</strong><small>Advanced</small>
-   </button>
-  </div>
-
-  <button class="primary wide" id="newBtn">
-   ＋ &nbsp; Start New Game
-  </button>
- </article>
-
- <article class="card" id="progressCard">
-  <div class="cardhead">
-   <div class="tileicon">▥</div>
-   <div>
-    <h2>My Progress</h2>
-    <p>Track your completed puzzles.</p>
-   </div>
-  </div>
-
-  <div class="stats">
-   <div class="stat">
-    <strong id="solved">0</strong>
-    <small>Puzzles Solved</small>
-   </div>
-   <div class="stat">
-    <strong id="best">—</strong>
-    <small>Best Time</small>
-   </div>
-   <div class="stat">
-    <strong id="streak">0</strong>
-    <small>Current Streak</small>
-   </div>
-  </div>
-
-  <p class="muted" style="font-size:12px">
-   Your progress is saved on this device.
-  </p>
-
-  <button class="wide" id="viewProgress">
-   ▥ &nbsp; View Full Progress
-  </button>
- </article>
-
- <article class="card" id="accessCard">
-  <div class="cardhead">
-   <div class="tileicon">♙</div>
-   <div>
-    <h2>Accessibility</h2>
-    <p>Customize your experience.</p>
-   </div>
-  </div>
-
-  <div class="setting">
-   <label for="appearance">Appearance</label>
-   <select id="appearance">
-    <option value="light">Light</option>
-    <option value="dark">Dark</option>
-    <option value="contrast">High contrast</option>
-   </select>
-  </div>
-
-  <div class="setting">
-   <label for="numberSize">Number Size</label>
-   <select id="numberSize">
-    <option value="normal">Normal</option>
-    <option value="large">Large</option>
-   </select>
-  </div>
-
-  <div class="setting">
-   <label for="voice">Voice Assistance</label>
-   <input type="checkbox" id="voice">
-  </div>
-
-  <div class="setting">
-   <label for="focus">Focus Lens</label>
-   <input type="checkbox" id="focus" checked>
-  </div>
- </article>
-
-</section>
 </main>
 
 <!-- GAME SCREEN -->
 
 <main id="game" class="hidden">
 
- <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px;flex-wrap:wrap">
-  <div>
-   <div class="eyebrow">YOUR PUZZLE WORKSPACE</div>
-   <h2 id="gameHeading">Easy Puzzle</h2>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px;flex-wrap:wrap">
+    <div>
+      <div class="eyebrow">YOUR PUZZLE WORKSPACE</div>
+      <h2 id="gameHeading">Easy Puzzle</h2>
+    </div>
+
+    <button id="backHome">← Back to Home</button>
   </div>
-  <button id="backHome">← Back to Home</button>
- </div>
 
- <div class="game-layout">
+  <div class="game-layout">
 
-  <section class="card game-card">
+    <section class="card game-card">
 
-   <div class="game-top">
-    <div class="stat">
-     <small>TIME</small>
-     <strong id="timer">00:00</strong>
-    </div>
-    <div class="stat">
-     <small>FILLED</small>
-     <strong id="filled">0/81</strong>
-    </div>
-    <div class="stat">
-     <small>MISTAKES</small>
-     <strong id="mistakes">0</strong>
-    </div>
-   </div>
+      <div class="game-top">
+        <div class="stat">
+          <small>TIME</small>
+          <strong id="timer">00:00</strong>
+        </div>
 
-   <div class="board" id="board" aria-label="Sudoku board"></div>
-   <div class="numbers" id="numbers"></div>
+        <div class="stat">
+          <small>FILLED</small>
+          <strong id="filled">0/81</strong>
+        </div>
 
-   <div class="game-actions">
-    <button id="erase">Erase</button>
-    <button id="notes">Notes: OFF</button>
-    <button id="hint">Hint</button>
-   </div>
+        <div class="stat">
+          <small>MISTAKES</small>
+          <strong id="mistakes">0</strong>
+        </div>
+      </div>
 
-   <div class="game-actions">
-    <button id="pause">Pause</button>
-    <button id="check">Check</button>
-    <button class="primary" id="restart">New Game</button>
-   </div>
+      <div class="board" id="board" aria-label="Sudoku board"></div>
 
-   <div class="message" id="message" aria-live="polite">
-    Select an empty cell to begin.
-   </div>
+      <div class="numbers" id="numbers"></div>
 
-   <div class="message hidden" id="coach"></div>
+      <div class="game-actions">
+        <button id="erase">Erase</button>
+        <button id="notes">Notes: OFF</button>
+        <button id="hint">Hint</button>
+      </div>
 
-  </section>
+      <div class="game-actions">
+        <button id="pause">Pause</button>
+        <button id="check">Check</button>
+        <button class="primary" id="restart">New Game</button>
+      </div>
 
-  <aside class="side">
+      <div class="message" id="message" aria-live="polite">
+        Select an empty cell to begin.
+      </div>
 
-   <section class="card">
-    <h3>Game Settings</h3>
+      <div class="message hidden" id="coach"></div>
 
-    <div class="setting">
-     <label for="gameDifficulty">Difficulty</label>
-     <select id="gameDifficulty">
-      <option>Easy</option>
-      <option>Medium</option>
-      <option>Hard</option>
-     </select>
-    </div>
+    </section>
 
-    <div class="setting">
-     <label for="relax">Relax Mode</label>
-     <input type="checkbox" id="relax">
-    </div>
-   </section>
+    <aside class="side">
 
-   <section class="card">
-    <h3>Smart Hint Coach</h3>
-    <p class="muted">Understand the logic behind your next move.</p>
-    <button id="explain">Explain Selected Cell</button>
-   </section>
+      <section class="card">
+        <h3>Game Settings</h3>
 
-   <section class="card">
-    <h3>How to Play</h3>
-    <ol class="muted">
-     <li>Fill empty cells using numbers 1 to 9.</li>
-     <li>Each row must contain numbers without repetition.</li>
-     <li>Each column must contain numbers without repetition.</li>
-     <li>Each 3×3 box must contain numbers without repetition.</li>
-    </ol>
-   </section>
+        <div class="setting">
+          <label for="gameDifficulty">Difficulty</label>
+          <select id="gameDifficulty">
+            <option>Easy</option>
+            <option>Medium</option>
+            <option>Hard</option>
+          </select>
+        </div>
 
-  </aside>
- </div>
+        <div class="setting">
+          <label for="relaxGame">Relax Mode</label>
+          <input type="checkbox" id="relaxGame">
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Smart Hint Coach</h3>
+        <p class="muted">
+          Understand the logic behind your next move.
+        </p>
+        <button id="explain">Explain Selected Cell</button>
+      </section>
+
+      <section class="card">
+        <h3>How to Play</h3>
+        <ol class="muted">
+          <li>Fill empty cells using numbers 1 to 9.</li>
+          <li>Each row must contain numbers without repetition.</li>
+          <li>Each column must contain numbers without repetition.</li>
+          <li>Each 3×3 box must contain numbers without repetition.</li>
+        </ol>
+      </section>
+
+    </aside>
+  </div>
 </main>
 
 <footer class="footer">
- Sudoku Access · HCI2 Accessibility Prototype
+  Sudoku Access · HCI2 Accessibility Prototype
 </footer>
 
 <script>
-const $=id=>document.getElementById(id);
+const $ = id => document.getElementById(id);
 
-const puzzles={
-Easy:[
-'530070000','600195000','098000060',
-'800060003','400803001','700020006',
-'060000280','000419005','000080079'
-],
-Medium:[
-'003020600','900305001','001806400',
-'008102900','700000008','006708200',
-'002609500','800203009','005010300'
-],
-Hard:[
-'000260701','680070090','190004500',
-'820100040','004602900','050003028',
-'009300074','040050036','703018000'
-]
+const SAVE = 'sudokuAccessSaveV2';
+const STATS = 'sudokuAccessStatsV2';
+const SETTINGS = 'sudokuAccessSettingsV1';
+
+const puzzles = {
+  Easy:[
+    '530070000','600195000','098000060',
+    '800060003','400803001','700020006',
+    '060000280','000419005','000080079'
+  ],
+  Medium:[
+    '003020600','900305001','001806400',
+    '008102900','700000008','006708200',
+    '002609500','800203009','005010300'
+  ],
+  Hard:[
+    '000260701','680070090','190004500',
+    '820100040','004602900','050003028',
+    '009300074','040050036','703018000'
+  ]
 };
 
-const solutions={
-Easy:[
-'534678912','672195348','198342567',
-'859761423','426853791','713924856',
-'961537284','287419635','345286179'
-],
-Medium:[
-'483921657','967345821','251876493',
-'548132976','729564138','136798245',
-'372689514','814253769','695417382'
-],
-Hard:[
-'435269781','682571493','197834562',
-'826195347','374682915','951743628',
-'519326874','248957136','763418259'
-]
+const solutions = {
+  Easy:[
+    '534678912','672195348','198342567',
+    '859761423','426853791','713924856',
+    '961537284','287419635','345286179'
+  ],
+  Medium:[
+    '483921657','967345821','251876493',
+    '548132976','729564138','136798245',
+    '372689514','814253769','695417382'
+  ],
+  Hard:[
+    '435269781','682571493','197834562',
+    '826195347','374682915','951743628',
+    '519326874','248957136','763418259'
+  ]
 };
 
-const SAVE='sudokuAccessSaveV2';
-const STATS='sudokuAccessStatsV2';
+let level = 'Easy';
+let selectedLevel = 'Easy';
 
-let level='Easy';
-let initial=[],grid=[],solution=[],notes=[];
-let selected=0,mistakes=0,seconds=0;
-let noteMode=false,paused=false,relax=false,completed=false;
-let selectedLevel='Easy',timer=null;
+let initial = [];
+let grid = [];
+let solution = [];
+let notes = [];
 
-let stats=JSON.parse(
- localStorage.getItem(STATS)||
- '{"solved":0,"best":null,"streak":0}'
-);
+let selected = 0;
+let mistakes = 0;
+let seconds = 0;
 
-const fmt=s=>
- String(Math.floor(s/60)).padStart(2,'0')+':'+
- String(s%60).padStart(2,'0');
+let noteMode = false;
+let paused = false;
+let relax = false;
+let completed = false;
+let timer = null;
 
-function save(){
- if(!grid.length||completed)return;
+let stats = {
+  solved:0,
+  best:null,
+  streak:0
+};
 
- localStorage.setItem(SAVE,JSON.stringify({
-  level,initial,grid,solution,
-  notes:notes.map(x=>[...x]),
-  selected,mistakes,seconds,relax
- }));
+try {
+  const storedStats = JSON.parse(localStorage.getItem(STATS));
+  if(storedStats) stats = {...stats,...storedStats};
+} catch(e) {}
 
- updateHome();
+let settings = {
+  appearance:'light',
+  numberSize:'normal',
+  voice:false,
+  focus:true,
+  relax:false
+};
+
+try {
+  const storedSettings = JSON.parse(localStorage.getItem(SETTINGS));
+  if(storedSettings) settings = {...settings,...storedSettings};
+} catch(e) {}
+
+const fmt = s =>
+  String(Math.floor(s/60)).padStart(2,'0') + ':' +
+  String(s%60).padStart(2,'0');
+
+function saveSettings() {
+  localStorage.setItem(SETTINGS,JSON.stringify(settings));
 }
 
-function saved(){
- try{
-  return JSON.parse(localStorage.getItem(SAVE)||'null');
- }catch(e){
-  return null;
- }
-}
+function applySettings() {
+  document.body.classList.remove('dark','contrast','large');
 
-function updateHome(){
- let s=saved();
-
- $('homeFilled').textContent=
-  s?s.grid.flat().filter(Boolean).length+'/81':'0/81';
-
- $('homeDifficulty').textContent=s?s.level:'—';
- $('homeTime').textContent=s?fmt(s.seconds):'00:00';
-
- $('homeProgress').style.width=s?
-  (s.grid.flat().filter(Boolean).length/81*100)+'%':'0%';
-
- $('continueBtn').disabled=!s;
- $('heroContinue').disabled=!s;
-
- $('noSave').classList.toggle('hidden',!!s);
-
- $('solved').textContent=stats.solved;
- $('best').textContent=stats.best===null?'—':fmt(stats.best);
- $('streak').textContent=stats.streak||0;
-}
-
-function screen(which){
- $('home').classList.toggle('hidden',which!=='home');
- $('game').classList.toggle('hidden',which!=='game');
- window.scrollTo(0,0);
-}
-
-function say(t){
- $('message').textContent=t;
-
- if($('voice').checked&&'speechSynthesis' in window){
-  speechSynthesis.cancel();
-  speechSynthesis.speak(new SpeechSynthesisUtterance(t));
- }
-}
-
-function valid(r,c,n){
- for(let i=0;i<9;i++){
-  if(i!==c&&grid[r][i]===n)return false;
-  if(i!==r&&grid[i][c]===n)return false;
- }
-
- let br=Math.floor(r/3)*3;
- let bc=Math.floor(c/3)*3;
-
- for(let y=br;y<br+3;y++){
-  for(let x=bc;x<bc+3;x++){
-   if((y!==r||x!==c)&&grid[y][x]===n)return false;
-  }
- }
-
- return true;
-}
-
-function startClock(){
- clearInterval(timer);
-
- timer=setInterval(()=>{
-  if(!paused&&!relax&&!completed){
-   seconds++;
-   $('timer').textContent=fmt(seconds);
-   save();
-  }
- },1000);
-}
-
-function newGame(l){
- level=l;
-
- initial=puzzles[l].map(x=>x.split('').map(Number));
- grid=initial.map(x=>x.slice());
-
- solution=solutions[l].map(x=>x.split('').map(Number));
-
- notes=Array.from({length:81},()=>new Set());
-
- selected=0;
- mistakes=0;
- seconds=0;
- noteMode=false;
- paused=false;
- relax=false;
- completed=false;
-
- $('gameDifficulty').value=l;
- $('relax').checked=false;
- $('timer').textContent='00:00';
- $('mistakes').textContent='0';
- $('notes').textContent='Notes: OFF';
- $('pause').textContent='Pause';
-
- $('coach').classList.add('hidden');
- $('gameHeading').textContent=l+' Puzzle';
-
- render();
- screen('game');
- say('Your new '+l.toLowerCase()+' puzzle is ready.');
-
- save();
- startClock();
-}
-
-function resume(){
- let s=saved();
- if(!s)return;
-
- level=s.level;
- initial=s.initial;
- grid=s.grid;
- solution=s.solution;
- notes=s.notes.map(x=>new Set(x));
-
- selected=s.selected||0;
- mistakes=s.mistakes||0;
- seconds=s.seconds||0;
- relax=!!s.relax;
-
- paused=false;
- completed=false;
- noteMode=false;
-
- $('gameDifficulty').value=level;
- $('relax').checked=relax;
- $('timer').textContent=fmt(seconds);
- $('mistakes').textContent=mistakes;
- $('gameHeading').textContent=level+' Puzzle';
- $('pause').textContent='Pause';
-
- render();
- screen('game');
-
- say('Welcome back. Your saved puzzle has been restored.');
- startClock();
-}
-
-function render(){
- let b=$('board');
- b.innerHTML='';
-
- let sr=Math.floor(selected/9);
- let sc=selected%9;
- let val=grid[sr]?.[sc];
-
- for(let i=0;i<81;i++){
-  let r=Math.floor(i/9);
-  let c=i%9;
-  let n=grid[r][c];
-
-  let el=document.createElement('button');
-  el.className='cell';
-  el.type='button';
-
-  if(initial[r][c])el.classList.add('fixed');
-
-  if(i===selected)el.classList.add('selected');
-  else if($('focus').checked&&(
-   r===sr||c===sc||
-   (Math.floor(r/3)===Math.floor(sr/3)&&
-    Math.floor(c/3)===Math.floor(sc/3))
-  )){
-   el.classList.add('related');
+  if(settings.appearance === 'dark') {
+    document.body.classList.add('dark');
   }
 
-  if(val&&n===val&&i!==selected){
-   el.classList.add('same');
+  if(settings.appearance === 'contrast') {
+    document.body.classList.add('contrast');
   }
 
-  if(n&&!valid(r,c,n)){
-   el.classList.add('error');
+  if(settings.numberSize === 'large') {
+    document.body.classList.add('large');
   }
 
-  el.textContent=n||'';
+  $('appearance').value = settings.appearance;
+  $('numberSize').value = settings.numberSize;
+  $('voice').checked = settings.voice;
+  $('focus').checked = settings.focus;
+  $('relaxSetting').checked = settings.relax;
 
-  el.setAttribute('aria-label',
-   `Row ${r+1}, column ${c+1}, ${n||'empty'}`
-  );
+  $('themeBtn').textContent =
+    settings.appearance === 'dark'
+      ? '☼ Light Mode'
+      : '☼ Dark Mode';
 
-  if(!n&&notes[i].size){
-   let span=document.createElement('span');
-
-   span.style.cssText=
-   'position:absolute;inset:1px;display:grid;'+
-   'grid-template-columns:repeat(3,1fr);'+
-   'grid-template-rows:repeat(3,1fr);'+
-   'font-size:9px;pointer-events:none';
-
-   for(let k=1;k<=9;k++){
-    let x=document.createElement('span');
-    x.textContent=notes[i].has(k)?k:'';
-    span.append(x);
-   }
-
-   el.append(span);
-  }
-
-  el.onclick=()=>{
-   if(!paused){
-    selected=i;
+  if(grid.length && !$('game').classList.contains('hidden')) {
     render();
-   }
+  }
+}
+
+function saved() {
+  try {
+    return JSON.parse(localStorage.getItem(SAVE) || 'null');
+  } catch(e) {
+    return null;
+  }
+}
+
+function save() {
+  if(!grid.length || completed) return;
+
+  localStorage.setItem(SAVE,JSON.stringify({
+    level,
+    initial,
+    grid,
+    solution,
+    notes:notes.map(x => [...x]),
+    selected,
+    mistakes,
+    seconds,
+    relax
+  }));
+
+  updateHome();
+}
+
+function updateHome() {
+  const s = saved();
+
+  const filled = s
+    ? s.grid.flat().filter(Boolean).length
+    : 0;
+
+  $('homeFilled').textContent = s ? filled + '/81' : '0/81';
+  $('homeDifficulty').textContent = s ? s.level : '—';
+  $('homeTime').textContent = s ? fmt(s.seconds) : '00:00';
+
+  $('homeProgress').style.width =
+    s ? (filled/81*100) + '%' : '0%';
+
+  $('continueBtn').disabled = !s;
+  $('heroContinue').disabled = !s;
+
+  $('noSave').classList.toggle('hidden',!!s);
+
+  $('solved').textContent = stats.solved;
+  $('best').textContent =
+    stats.best === null ? '—' : fmt(stats.best);
+  $('streak').textContent = stats.streak || 0;
+}
+
+/* SCREEN NAVIGATION */
+
+function screen(which) {
+  const screens = ['home','game','progressPage','settingsPage'];
+
+  screens.forEach(id => {
+    $(id).classList.toggle('hidden',id !== which);
+  });
+
+  document.querySelectorAll('.navlinks button').forEach(btn => {
+    btn.classList.remove('active');
+  });
+
+  const active = {
+    home:'navHome',
+    progressPage:'navProgress',
+    settingsPage:'navSettings'
   };
 
-  b.append(el);
- }
+  if(active[which]) {
+    $(active[which]).classList.add('active');
+  }
 
- $('filled').textContent=
-  grid.flat().filter(Boolean).length+'/81';
+  window.scrollTo(0,0);
 }
 
-function enter(n){
- if(paused)return say('Resume the game to continue.');
- if(completed)return;
+function leaveGame() {
+  if(!$('game').classList.contains('hidden')) {
+    save();
+    clearInterval(timer);
+  }
+}
 
- let r=Math.floor(selected/9);
- let c=selected%9;
+/* VOICE ASSISTANCE */
 
- if(initial[r][c]){
-  return say('That number is fixed.');
- }
+function say(message) {
+  $('message').textContent = message;
 
- if(noteMode){
-  notes[selected].has(n)?
-   notes[selected].delete(n):
-   notes[selected].add(n);
+  if(settings.voice && 'speechSynthesis' in window) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(
+      new SpeechSynthesisUtterance(message)
+    );
+  }
+}
+
+/* SUDOKU RULE VALIDATION */
+
+function valid(r,c,n) {
+  for(let i=0;i<9;i++) {
+    if(i!==c && grid[r][i]===n) return false;
+    if(i!==r && grid[i][c]===n) return false;
+  }
+
+  const br = Math.floor(r/3)*3;
+  const bc = Math.floor(c/3)*3;
+
+  for(let y=br;y<br+3;y++) {
+    for(let x=bc;x<bc+3;x++) {
+      if((y!==r || x!==c) && grid[y][x]===n) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+/* GAME TIMER */
+
+function startClock() {
+  clearInterval(timer);
+
+  timer = setInterval(() => {
+    if(!paused && !relax && !completed) {
+      seconds++;
+      $('timer').textContent = fmt(seconds);
+      save();
+    }
+  },1000);
+}
+
+/* START NEW GAME */
+
+function newGame(difficulty) {
+  level = difficulty;
+
+  initial = puzzles[level].map(row =>
+    row.split('').map(Number)
+  );
+
+  grid = initial.map(row => row.slice());
+
+  solution = solutions[level].map(row =>
+    row.split('').map(Number)
+  );
+
+  notes = Array.from({length:81},() => new Set());
+
+  selected = 0;
+  mistakes = 0;
+  seconds = 0;
+
+  noteMode = false;
+  paused = false;
+  relax = settings.relax;
+  completed = false;
+
+  $('gameDifficulty').value = level;
+  $('relaxGame').checked = relax;
+  $('timer').textContent = '00:00';
+  $('mistakes').textContent = '0';
+  $('notes').textContent = 'Notes: OFF';
+  $('pause').textContent = 'Pause';
+
+  $('coach').classList.add('hidden');
+  $('gameHeading').textContent = level + ' Puzzle';
+
+  render();
+  screen('game');
+
+  say('Your new ' + level.toLowerCase() + ' puzzle is ready.');
+
+  save();
+  startClock();
+}
+
+/* CONTINUE SAVED GAME */
+
+function resume() {
+  const s = saved();
+  if(!s) return;
+
+  level = s.level;
+  initial = s.initial;
+  grid = s.grid;
+  solution = s.solution;
+
+  notes = s.notes.map(x => new Set(x));
+
+  selected = s.selected || 0;
+  mistakes = s.mistakes || 0;
+  seconds = s.seconds || 0;
+  relax = !!s.relax;
+
+  paused = false;
+  completed = false;
+  noteMode = false;
+
+  $('gameDifficulty').value = level;
+  $('relaxGame').checked = relax;
+  $('timer').textContent = fmt(seconds);
+  $('mistakes').textContent = mistakes;
+  $('gameHeading').textContent = level + ' Puzzle';
+  $('pause').textContent = 'Pause';
+
+  render();
+  screen('game');
+
+  say('Welcome back. Your saved puzzle has been restored.');
+
+  startClock();
+}
+
+/* RENDER SUDOKU BOARD */
+
+function render() {
+  const board = $('board');
+  board.innerHTML = '';
+
+  const sr = Math.floor(selected/9);
+  const sc = selected%9;
+  const val = grid[sr]?.[sc];
+
+  for(let i=0;i<81;i++) {
+    const r = Math.floor(i/9);
+    const c = i%9;
+    const n = grid[r][c];
+
+    const cell = document.createElement('button');
+    cell.className = 'cell';
+    cell.type = 'button';
+
+    if(initial[r][c]) cell.classList.add('fixed');
+
+    if(i === selected) {
+      cell.classList.add('selected');
+    } else if(settings.focus && (
+      r === sr ||
+      c === sc ||
+      (Math.floor(r/3) === Math.floor(sr/3) &&
+       Math.floor(c/3) === Math.floor(sc/3))
+    )) {
+      cell.classList.add('related');
+    }
+
+    if(val && n === val && i !== selected) {
+      cell.classList.add('same');
+    }
+
+    if(n && !valid(r,c,n)) {
+      cell.classList.add('error');
+    }
+
+    cell.textContent = n || '';
+
+    cell.setAttribute(
+      'aria-label',
+      `Row ${r+1}, column ${c+1}, ${n || 'empty'}`
+    );
+
+    if(!n && notes[i].size) {
+      const span = document.createElement('span');
+
+      span.style.cssText =
+        'position:absolute;inset:1px;display:grid;' +
+        'grid-template-columns:repeat(3,1fr);' +
+        'grid-template-rows:repeat(3,1fr);' +
+        'font-size:9px;pointer-events:none';
+
+      for(let k=1;k<=9;k++) {
+        const item = document.createElement('span');
+        item.textContent = notes[i].has(k) ? k : '';
+        span.append(item);
+      }
+
+      cell.append(span);
+    }
+
+    cell.onclick = () => {
+      if(!paused) {
+        selected = i;
+        render();
+      }
+    };
+
+    board.append(cell);
+  }
+
+  $('filled').textContent =
+    grid.flat().filter(Boolean).length + '/81';
+}
+
+/* ENTER A NUMBER */
+
+function enter(n) {
+  if(paused) return say('Resume the game to continue.');
+  if(completed) return;
+
+  const r = Math.floor(selected/9);
+  const c = selected%9;
+
+  if(initial[r][c]) {
+    return say('That number is fixed.');
+  }
+
+  if(noteMode) {
+    if(notes[selected].has(n)) {
+      notes[selected].delete(n);
+    } else {
+      notes[selected].add(n);
+    }
+
+    render();
+    save();
+    return;
+  }
+
+  if(!valid(r,c,n)) {
+    mistakes++;
+    $('mistakes').textContent = mistakes;
+    return say('That number conflicts with the row, column, or box.');
+  }
+
+  grid[r][c] = n;
+  notes[selected].clear();
 
   render();
   save();
-  return;
- }
 
- if(!valid(r,c,n)){
-  mistakes++;
-  $('mistakes').textContent=mistakes;
-  return say('That number conflicts with the row, column, or box.');
- }
+  say('Number entered.');
 
- grid[r][c]=n;
- notes[selected].clear();
+  if(grid.every((row,y) =>
+    row.every((value,x) => value === solution[y][x])
+  )) {
+    completed = true;
+    clearInterval(timer);
 
- render();
- save();
+    stats.solved++;
+    stats.streak++;
 
- say('Number entered.');
+    if(stats.best === null || seconds < stats.best) {
+      stats.best = seconds;
+    }
 
- if(grid.every((row,y)=>
-  row.every((v,x)=>v===solution[y][x])
- )){
-  completed=true;
+    localStorage.setItem(STATS,JSON.stringify(stats));
+    localStorage.removeItem(SAVE);
+
+    updateHome();
+
+    $('coach').textContent =
+      'Congratulations! You solved the puzzle in ' + fmt(seconds) + '.';
+
+    $('coach').classList.remove('hidden');
+
+    say('Congratulations! Puzzle completed!');
+  }
+}
+
+/* NUMBER BUTTONS */
+
+for(let n=1;n<=9;n++) {
+  const button = document.createElement('button');
+  button.textContent = n;
+  button.onclick = () => enter(n);
+  $('numbers').append(button);
+}
+
+/* HOME BUTTONS */
+
+$('heroNew').onclick = $('newBtn').onclick = () => {
+  newGame(selectedLevel);
+};
+
+$('heroContinue').onclick = $('continueBtn').onclick = resume;
+
+document.querySelectorAll('[data-level]').forEach(button => {
+  button.onclick = () => {
+    selectedLevel = button.dataset.level;
+
+    document.querySelectorAll('[data-level]').forEach(item => {
+      item.classList.toggle('selected',item === button);
+    });
+  };
+});
+
+/* NAVIGATION BUTTONS */
+
+$('navHome').onclick = () => {
+  leaveGame();
+  updateHome();
+  screen('home');
+};
+
+$('navProgress').onclick = () => {
+  leaveGame();
+  updateHome();
+  screen('progressPage');
+};
+
+$('navSettings').onclick = () => {
+  leaveGame();
+  screen('settingsPage');
+};
+
+$('backHome').onclick = () => {
+  save();
   clearInterval(timer);
+  updateHome();
+  screen('home');
+};
 
-  stats.solved++;
-  stats.streak++;
+/* GAME CONTROLS */
 
-  if(stats.best===null||seconds<stats.best){
-   stats.best=seconds;
+$('restart').onclick = () => {
+  if(confirm('Start a new puzzle? Your saved game will be replaced.')) {
+    newGame($('gameDifficulty').value);
+  }
+};
+
+$('gameDifficulty').onchange = e => {
+  newGame(e.target.value);
+};
+
+$('erase').onclick = () => {
+  if(paused) return;
+
+  const r = Math.floor(selected/9);
+  const c = selected%9;
+
+  if(initial[r][c]) {
+    return say('You cannot erase a fixed number.');
   }
 
-  localStorage.setItem(STATS,JSON.stringify(stats));
-  localStorage.removeItem(SAVE);
+  grid[r][c] = 0;
+  notes[selected].clear();
 
-  updateHome();
+  render();
+  save();
 
-  $('coach').textContent=
-   'Congratulations! You solved the puzzle in '+fmt(seconds)+'.';
+  say('Cell erased.');
+};
+
+$('notes').onclick = () => {
+  noteMode = !noteMode;
+
+  $('notes').textContent =
+    'Notes: ' + (noteMode ? 'ON' : 'OFF');
+
+  say(noteMode ? 'Notes mode enabled.' : 'Notes mode disabled.');
+};
+
+function hint() {
+  const r = Math.floor(selected/9);
+  const c = selected%9;
+
+  if(grid[r][c]) {
+    return say('Select an empty cell first.');
+  }
+
+  const candidates = [];
+
+  for(let n=1;n<=9;n++) {
+    if(valid(r,c,n)) candidates.push(n);
+  }
+
+  $('coach').textContent =
+    `For row ${r+1}, column ${c+1}, possible candidates are ` +
+    `${candidates.join(', ')}. Compare the row, column, and 3×3 box ` +
+    `to narrow them down.`;
 
   $('coach').classList.remove('hidden');
 
-  say('Congratulations! Puzzle completed!');
- }
+  say('Smart Hint Coach has provided guidance.');
 }
 
-// NUMBER BUTTONS
+$('hint').onclick = hint;
+$('explain').onclick = hint;
 
-for(let n=1;n<=9;n++){
- let x=document.createElement('button');
- x.textContent=n;
- x.onclick=()=>enter(n);
- $('numbers').append(x);
-}
+$('pause').onclick = () => {
+  paused = !paused;
 
-// DASHBOARD BUTTONS
+  $('pause').textContent = paused ? 'Resume' : 'Pause';
 
-$('heroNew').onclick=$('newBtn').onclick=()=>{
- newGame(selectedLevel);
+  say(paused ? 'Game paused.' : 'Game resumed.');
 };
 
-$('heroContinue').onclick=$('continueBtn').onclick=resume;
+$('check').onclick = () => {
+  let conflicts = 0;
+  let empty = 0;
 
-document.querySelectorAll('[data-level]').forEach(b=>{
- b.onclick=()=>{
-  selectedLevel=b.dataset.level;
+  for(let r=0;r<9;r++) {
+    for(let c=0;c<9;c++) {
+      const n = grid[r][c];
 
-  document.querySelectorAll('[data-level]').forEach(x=>{
-   x.classList.toggle('selected',x===b);
-  });
- };
-});
+      if(!n) {
+        empty++;
+      } else if(!valid(r,c,n)) {
+        conflicts++;
+      }
+    }
+  }
 
-$('backHome').onclick=()=>{
- save();
- clearInterval(timer);
- updateHome();
- screen('home');
+  if(conflicts) {
+    say('There are ' + conflicts + ' conflicting entries. Review the highlighted cells.');
+  } else if(empty) {
+    say('No conflicts found. You still have ' + empty + ' empty cells.');
+  } else if(grid.every((row,r) =>
+    row.every((n,c) => n === solution[r][c])
+  )) {
+    say('All entries are correct. Congratulations!');
+  } else {
+    say('The board is filled, but some answers are incorrect.');
+  }
 };
 
-$('restart').onclick=()=>{
- if(confirm('Start a new puzzle? Your saved game will be replaced.')){
-  newGame($('gameDifficulty').value);
- }
-};
-
-$('gameDifficulty').onchange=e=>{
- newGame(e.target.value);
-};
-
-// GAME CONTROLS
-
-$('erase').onclick=()=>{
- if(paused)return;
-
- let r=Math.floor(selected/9);
- let c=selected%9;
-
- if(initial[r][c]){
-  return say('You cannot erase a fixed number.');
- }
-
- grid[r][c]=0;
- notes[selected].clear();
-
- render();
- save();
-
- say('Cell erased.');
-};
-
-$('notes').onclick=()=>{
- noteMode=!noteMode;
-
- $('notes').textContent=
-  'Notes: '+(noteMode?'ON':'OFF');
-
- say(noteMode?'Notes mode enabled.':'Notes mode disabled.');
-};
-
-function hint(){
- let r=Math.floor(selected/9);
- let c=selected%9;
-
- if(grid[r][c]){
-  return say('Select an empty cell first.');
- }
-
- let p=[];
-
- for(let n=1;n<=9;n++){
-  if(valid(r,c,n))p.push(n);
- }
-
- $('coach').textContent=
-  `For row ${r+1}, column ${c+1}, possible candidates are `+
-  `${p.join(', ')}. Compare the row, column, and 3×3 box `+
-  `to narrow them down. The solution for this cell is `+
-  `${solution[r][c]}.`;
-
- $('coach').classList.remove('hidden');
-
- say('Smart Hint Coach has provided guidance.');
-}
-
-$('hint').onclick=hint;
-$('explain').onclick=hint;
-
-$('pause').onclick=()=>{
- paused=!paused;
-
- $('pause').textContent=paused?'Resume':'Pause';
-
- say(paused?'Game paused.':'Game resumed.');
-};
-
-$('check').onclick=()=>{
- say('Check completed. Review any highlighted conflicting entries.');
-};
-
-$('relax').onchange=e=>{
- relax=e.target.checked;
- save();
-
- say(relax?'Relax Mode enabled.':'Relax Mode disabled.');
-};
-
-$('focus').onchange=()=>render();
-
-// APPEARANCE SETTINGS
-
-$('themeBtn').onclick=()=>{
- document.body.classList.toggle('dark');
- document.body.classList.remove('contrast');
-
- $('appearance').value=
-  document.body.classList.contains('dark')?'dark':'light';
-
- $('themeBtn').textContent=
-  document.body.classList.contains('dark')?
-  '☼ Light Mode':'☼ Dark Mode';
-};
-
-$('appearance').onchange=e=>{
- document.body.classList.remove('dark','contrast');
-
- if(e.target.value==='dark'){
-  document.body.classList.add('dark');
- }
-
- if(e.target.value==='contrast'){
-  document.body.classList.add('contrast');
- }
-
- $('themeBtn').textContent=
-  e.target.value==='dark'?'☼ Light Mode':'☼ Dark Mode';
-};
-
-$('numberSize').onchange=e=>{
- document.body.classList.toggle(
-  'large',e.target.value==='large'
- );
-};
-
-// NAVIGATION
-
-$('navHome').onclick=()=>{
- if(!$('game').classList.contains('hidden')){
+$('relaxGame').onchange = e => {
+  relax = e.target.checked;
   save();
-  clearInterval(timer);
- }
 
- updateHome();
- screen('home');
+  say(relax ? 'Relax Mode enabled.' : 'Relax Mode disabled.');
 };
 
-$('navProgress').onclick=()=>{
- $('progressCard').scrollIntoView({
-  behavior:'smooth',block:'center'
- });
+/* APPEARANCE AND ACCESSIBILITY */
+
+$('themeBtn').onclick = () => {
+  settings.appearance =
+    settings.appearance === 'dark' ? 'light' : 'dark';
+
+  saveSettings();
+  applySettings();
 };
 
-$('viewProgress').onclick=()=>{
- $('progressCard').scrollIntoView({
-  behavior:'smooth',block:'center'
- });
+$('appearance').onchange = e => {
+  settings.appearance = e.target.value;
+  saveSettings();
+  applySettings();
 };
 
-$('navSettings').onclick=()=>{
- $('accessCard').scrollIntoView({
-  behavior:'smooth',block:'center'
- });
+$('numberSize').onchange = e => {
+  settings.numberSize = e.target.value;
+  saveSettings();
+  applySettings();
 };
 
-// KEYBOARD CONTROLS
+$('voice').onchange = e => {
+  settings.voice = e.target.checked;
+  saveSettings();
+};
 
-document.addEventListener('keydown',e=>{
- if($('game').classList.contains('hidden'))return;
- if(e.target.tagName==='SELECT')return;
-
- if(e.key>='1'&&e.key<='9'){
-  enter(+e.key);
- }
-
- if(e.key==='Backspace'||e.key==='Delete'){
-  $('erase').click();
- }
-
- if(e.key.startsWith('Arrow')){
-  e.preventDefault();
-
-  let r=Math.floor(selected/9);
-  let c=selected%9;
-
-  if(e.key==='ArrowUp')r=Math.max(0,r-1);
-  if(e.key==='ArrowDown')r=Math.min(8,r+1);
-  if(e.key==='ArrowLeft')c=Math.max(0,c-1);
-  if(e.key==='ArrowRight')c=Math.min(8,c+1);
-
-  selected=r*9+c;
+$('focus').onchange = e => {
+  settings.focus = e.target.checked;
+  saveSettings();
   render();
- }
+};
+
+$('relaxSetting').onchange = e => {
+  settings.relax = e.target.checked;
+  saveSettings();
+};
+
+/* KEYBOARD CONTROLS */
+
+document.addEventListener('keydown',e => {
+  if($('game').classList.contains('hidden')) return;
+  if(e.target.tagName === 'SELECT') return;
+
+  if(e.key >= '1' && e.key <= '9') {
+    enter(+e.key);
+  }
+
+  if(e.key === 'Backspace' || e.key === 'Delete') {
+    $('erase').click();
+  }
+
+  if(e.key.startsWith('Arrow')) {
+    e.preventDefault();
+
+    let r = Math.floor(selected/9);
+    let c = selected%9;
+
+    if(e.key === 'ArrowUp') r = Math.max(0,r-1);
+    if(e.key === 'ArrowDown') r = Math.min(8,r+1);
+    if(e.key === 'ArrowLeft') c = Math.max(0,c-1);
+    if(e.key === 'ArrowRight') c = Math.min(8,c+1);
+
+    selected = r*9+c;
+    render();
+  }
 });
 
-// INITIALIZE HOMEPAGE
+/* INITIALIZE */
 
+applySettings();
 updateHome();
-</script>
+screen('home');
 
+</script>
 </body>
 </html>
